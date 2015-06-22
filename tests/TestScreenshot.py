@@ -11,8 +11,7 @@ import time
 def setup_module(module):
     path = config.baseImageDir + "tmp"
     today = datetime.datetime.now().date().isoformat()
-    #baseCopyPath = "/Users/emoyal/Documents/Projects/screenshot/"
-    imgsDir = "../imgs/"
+    imgsDir = config.baseProjectDir + "imgs/"
     screen1 = "screenshot1.png"
     screen2 = "screenshot2.png"
     screen3 = "screenshot3.png"
@@ -43,6 +42,7 @@ def setup_module(module):
         os.rename(os.path.join(fullSavesPath, screen2), os.path.join(fullSavesPath, screen3))
     if not os.path.exists(os.path.join(fullSavesPath, screen2)):
         shutil.copy2(imgsDir + screen2, fullSavesPath)
+
 
 def teardown_module(module):
     path = config.baseImageDir + "SomeView/"
