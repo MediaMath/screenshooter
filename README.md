@@ -26,6 +26,8 @@ Tests are implemented using pytest. To install use pip.
 pip install pytest
 ```
 
+**NOTE:** Alter the config.py file so that Screenshooter can find the correct directory in your file system and allow the tests to run
+
 ####Some general rules of thumb:
 - All images are stored in a multi-dimensional dictionary of the format:
 ```python

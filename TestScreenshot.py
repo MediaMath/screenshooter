@@ -1,3 +1,4 @@
+import screenshot.config as config
 import pytest
 import datetime
 import shutil
@@ -8,9 +9,9 @@ import time
 
 
 def setup_module(module):
-    path = "/Users/emoyal/Pictures/tmp"
+    path = config.baseImageDir + "tmp"
     today = datetime.datetime.now().date().isoformat()
-    baseCopyPath = "/Users/emoyal/Documents/Projects/screenshot/"
+    #baseCopyPath = "/Users/emoyal/Documents/Projects/screenshot/"
     screen1 = "screenshot1.png"
     screen2 = "screenshot2.png"
     screen3 = "screenshot3.png"
@@ -28,7 +29,7 @@ def setup_module(module):
     if not os.path.exists(os.path.join(fullPath, screen3)):
         shutil.copy2(screen3, fullPath)
 
-    savesPath = "/Users/emoyal/Pictures/"
+    savesPath = config.baseImageDir
     fullSavesPath = os.path.join(savesPath, "SomeView", today)
     if not os.path.exists(os.path.join(savesPath, "SomeView")):
         os.mkdir(os.path.join(savesPath, "SomeView"))
@@ -43,17 +44,14 @@ def setup_module(module):
         shutil.copy2(screen2, fullSavesPath)
 
 def teardown_module(module):
-    path = "/Users/emoyal/Pictures/SomeView/"
+    path = config.baseImageDir + "SomeView/"
     shutil.rmtree(path)
 
 
 class TestScreenshot:
 
-    screenLoc1 = "/Users/emoyal/Pictures/tmp/screenshot1.png"
-    screenLoc2 = "/Users/emoyal/Pictures/tmp/screenshot2.png"
-    screenLoc3 = "/Users/emoyal/Pictures/tmp/screenshot3.png"
-    nonExistentScreenLoc = "/Users/emoyal/Pictures/nonexistent.png"
-    directoryLocationOfScreenshots = "/Users/emoyal/Pictures"
+    nonExistentScreenLoc = config.baseImageDir + "nonexistent.png"
+    directoryLocationOfScreenshots = config.baseImageDir
 
     def setup_method(self, method):
         self.screenshotProcess = Screenshot()

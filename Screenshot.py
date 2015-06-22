@@ -1,5 +1,6 @@
 from PIL import Image
 from PIL import ImageChops
+import screenshot.config as config
 import fnmatch
 import os
 import datetime
@@ -10,13 +11,11 @@ class Screenshot:
     img1 = None
     img2 = None
 
-    picturesDir = "/Users/emoyal/Pictures/"
-    pictureType = ".png"
     imgs = dict()
 
     def __init__(self, fs = True):
         if fs:
-            self.imgs = self.collectFSImgs(self.picturesDir)
+            self.imgs = self.collectFSImgs(config.baseImageDir)
 
     def collectFSImgs(self, baseDir):
         dictPics = dict()
@@ -27,7 +26,7 @@ class Screenshot:
                     if os.path.isdir(os.path.join(baseDir, dirView, dirDate)):
                         screenshotsDate = dict()
                         for filename in fnmatch.filter(os.listdir(os.path.join(baseDir,
-                                                       dirView, dirDate)), "*" + self.pictureType):
+                                                       dirView, dirDate)), "*" + config.pictureType):
                             screenshotsDate[filename] = Image.open(os.path.join(baseDir,
                                                                    dirView, dirDate, filename))
                         screenshotsView[dirDate] = screenshotsDate
@@ -42,7 +41,7 @@ class Screenshot:
                     if os.path.isdir(os.path.join(os.path.join(baseDir, "tmp", dirView, dirDate))):
                         screenshotsDate = dict()
                         for filename in fnmatch.filter(os.listdir(os.path.join(baseDir,
-                                                       "tmp", dirView, dirDate)), "*" + self.pictureType):
+                                                       "tmp", dirView, dirDate)), "*" + config.pictureType):
                             screenshotsDate[filename] = Image.open(os.path.join(baseDir,
                                                                    "tmp", dirView, dirDate, filename))
                 screenshotsView[dirDate] = screenshotsDate
@@ -117,12 +116,12 @@ class Screenshot:
         today = datetime.datetime.now().date().isoformat()
         try:
             for view in fnmatch.filter(self.imgs, "*View"):
-                if not os.path.exists(os.path.join(self.picturesDir, view)):
-                    os.mkdir(os.path.join(self.picturesDir, view))
-                if not os.path.exists(os.path.join(self.picturesDir, view, today)):
-                    os.mkdir(os.path.join(self.picturesDir, view, today))
+                if not os.path.exists(os.path.join(config.baseImageDir, view)):
+                    os.mkdir(os.path.join(config.baseImageDir, view))
+                if not os.path.exists(os.path.join(config.baseImageDir, view, today)):
+                    os.mkdir(os.path.join(config.baseImageDir, view, today))
                 for function in self.imgs[view][today]:
-                    self.imgs[view][today][function].save(os.path.join(self.picturesDir, view,
+                    self.imgs[view][today][function].save(os.path.join(config.baseImageDir, view,
                                                                        today, function))
             return True
         except:
@@ -236,7 +235,7 @@ class Screenshot:
 
     def cleanupFS(self):
         try:
-            path = self.picturesDir + "tmp"
+            path = config.baseImageDir + "tmp"
             shutil.rmtree(path)
         except:
             return False
@@ -293,7 +292,7 @@ class Screenshot:
     #     if name is None and fullLoc is None:
     #         raise UnboundLocalError("Both parameters are null please provide at least one parameter")
     #     elif name is not None and fullLoc is None:
-    #         loc = self.picturesDir + "tmp/" + name
+    #         loc = config.baseImageDir + "tmp/" + name
     #     if fullLoc is not None:
     #         loc = fullLoc
     #
@@ -303,8 +302,8 @@ class Screenshot:
     # def searchImg(self, img, loc):
     #     if img is None:
     #         return False
-    #     for root, dirnames, filenames in os.walk(self.picturesDir):
-    #         for filename in fnmatch.filter(filenames, "*" + self.pictureType):
+    #     for root, dirnames, filenames in os.walk(config.baseImageDir):
+    #         for filename in fnmatch.filter(filenames, "*" + config.pictureType):
     #             fileLoc = os.path.join(root, filename)
     #             if fileLoc == loc:
     #                 continue
@@ -316,7 +315,7 @@ class Screenshot:
     #     return False
 
         #     today = datetime.datetime.now()
-        #     path = self.picturesDir + "SomeView/"
+        #     path = config.baseImageDir + "SomeView/"
         #     if not os.path.exists(path):
         #         os.mkdir(path)
         #     outputPath = path + today.date().isoformat() + "/"
@@ -324,7 +323,7 @@ class Screenshot:
         #         os.mkdir(outputPath)
         #     filename = "{0}_{1}_{2}_{3}".format(today.hour, today.minute,
         #                                         today.second, today.microsecond)
-        #     img.save(outputPath + filename + self.pictureType)
+        #     img.save(outputPath + filename + config.pictureType)
         # except IOError:
         #     raise
         # except AttributeError:
