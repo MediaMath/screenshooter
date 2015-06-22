@@ -1,6 +1,6 @@
 from PIL import Image
 from PIL import ImageChops
-import screenshot.config as config
+import screenshooter.config as config
 import fnmatch
 import os
 import datetime

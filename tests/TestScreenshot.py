@@ -1,10 +1,10 @@
-import screenshot.config as config
+import screenshooter.config as config
 import pytest
 import datetime
 import shutil
 import os
 from PIL import Image
-from screenshot.Screenshot import Screenshot
+from screenshooter.Screenshot import Screenshot
 import time
 
 
@@ -12,6 +12,7 @@ def setup_module(module):
     path = config.baseImageDir + "tmp"
     today = datetime.datetime.now().date().isoformat()
     #baseCopyPath = "/Users/emoyal/Documents/Projects/screenshot/"
+    imgsDir = "../imgs/"
     screen1 = "screenshot1.png"
     screen2 = "screenshot2.png"
     screen3 = "screenshot3.png"
@@ -23,11 +24,11 @@ def setup_module(module):
     if not os.path.exists(os.path.join(path, "SomeView", today)):
         os.mkdir(fullPath)
     if not os.path.exists(os.path.join(fullPath, screen1)):
-        shutil.copy2(screen1, fullPath)
+        shutil.copy2(imgsDir + screen1, fullPath)
     if not os.path.exists(os.path.join(fullPath, screen2)):
-        shutil.copy2(screen2, fullPath)
+        shutil.copy2(imgsDir + screen2, fullPath)
     if not os.path.exists(os.path.join(fullPath, screen3)):
-        shutil.copy2(screen3, fullPath)
+        shutil.copy2(imgsDir + screen3, fullPath)
 
     savesPath = config.baseImageDir
     fullSavesPath = os.path.join(savesPath, "SomeView", today)
@@ -36,12 +37,12 @@ def setup_module(module):
     if not os.path.exists(fullSavesPath):
         os.mkdir(fullSavesPath)
     if not os.path.exists(os.path.join(fullSavesPath, screen1)):
-        shutil.copy2(screen1, fullSavesPath)
+        shutil.copy2(imgsDir + screen1, fullSavesPath)
     if not os.path.exists(os.path.join(fullSavesPath, screen3)):
-        shutil.copy2(screen2, fullSavesPath)
+        shutil.copy2(imgsDir + screen2, fullSavesPath)
         os.rename(os.path.join(fullSavesPath, screen2), os.path.join(fullSavesPath, screen3))
     if not os.path.exists(os.path.join(fullSavesPath, screen2)):
-        shutil.copy2(screen2, fullSavesPath)
+        shutil.copy2(imgsDir + screen2, fullSavesPath)
 
 def teardown_module(module):
     path = config.baseImageDir + "SomeView/"
