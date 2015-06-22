@@ -5,7 +5,6 @@ import os
 import datetime
 import shutil
 
-
 class Screenshot:
 
     img1 = None
@@ -69,33 +68,62 @@ class Screenshot:
         if imgLoc is None and diffImg is None and changeImg is None:
             return False
 
+        view = imgLoc['View']
+        date = imgLoc['Date']
+        function = imgLoc['Function']
         try:
-            view = imgLoc['View']
-            date = imgLoc['Date']
-            function = imgLoc['Function']
+            imgRevert = self.imgs[view][date][function]
+        except:
+            pass
+
+        try:
             if view not in self.imgs:
                 self.imgs[view] = dict()
             if date not in self.imgs[view]:
                 self.imgs[view][date] = dict()
             self.imgs[view][date][function] = self.imgs['tmp'][view][date][function]
         except:
-            raise
+            if imgRevert is None:
+                del self.imgs[view][date][function]
+            else:
+                self.imgs[view][date][function] = imgRevert
+            return False
+
+        if diffImg is not None or changeImg is not None:
+            try:
+                imgName = function.partition('.')
+                if diffImg is not None:
+                    diffName = imgName[0] + "Diff.png"
+                    self.imgs[view][date][diffName] = diffImg
+                if changeImg is not None:
+                    changeName = imgName[0] + "Change.png"
+                    self.imgs[view][date][changeName] = changeImg
+            except:
+                #Not sure if still executes under single try if only one fails
+                try:
+                    del self.imgs[view][date][diffName]
+                except KeyError:
+                    pass
+                try:
+                    del self.imgs[view][date][changeName]
+                except KeyError:
+                    pass
+                self.imgs[view][date][function] = imgRevert
+                return False
+
         return True
 
     def saveFS(self):
         today = datetime.datetime.now().date().isoformat()
         try:
             for view in fnmatch.filter(self.imgs, "*View"):
-                print(view)
                 if not os.path.exists(os.path.join(self.picturesDir, view)):
                     os.mkdir(os.path.join(self.picturesDir, view))
                 if not os.path.exists(os.path.join(self.picturesDir, view, today)):
                     os.mkdir(os.path.join(self.picturesDir, view, today))
                 for function in self.imgs[view][today]:
-                    self.imgs[view][today][function].save(os.path.join(self.picturesDir,
-                                                                       view,
-                                                                       today,
-                                                                       function))
+                    self.imgs[view][today][function].save(os.path.join(self.picturesDir, view,
+                                                                       today, function))
             return True
         except:
             return False
@@ -223,18 +251,14 @@ class Screenshot:
                     diff = None
                     change = None
                     if originalLoc is not None:
-                        modifiedImg = self.getImg(modifiedLoc)
+                        modifiedImg = self.getImg(modifiedLoc, True)
                         originalImg = self.getImg(originalLoc)
                         if self.equals(originalImg, modifiedImg):
                             continue
                         diff = self.getDiff()
                         change = self.getChange()
                     self.store(modifiedLoc, diff, change)
-
-
-#TODO
-#Create run function that iterates through tmp directory and creates the diffs then saves them
-
+        return True
 
 #Documenting terminal completion
 #

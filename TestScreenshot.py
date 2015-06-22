@@ -36,11 +36,11 @@ def setup_module(module):
         os.mkdir(fullSavesPath)
     if not os.path.exists(os.path.join(fullSavesPath, screen1)):
         shutil.copy2(screen1, fullSavesPath)
+    if not os.path.exists(os.path.join(fullSavesPath, screen3)):
+        shutil.copy2(screen2, fullSavesPath)
+        os.rename(os.path.join(fullSavesPath, screen2), os.path.join(fullSavesPath, screen3))
     if not os.path.exists(os.path.join(fullSavesPath, screen2)):
         shutil.copy2(screen2, fullSavesPath)
-    if not os.path.exists(os.path.join(fullSavesPath, screen3)):
-        shutil.copy2(screen3, fullSavesPath)
-
 
 def teardown_module(module):
     path = "/Users/emoyal/Pictures/SomeView/"
@@ -95,15 +95,6 @@ class TestScreenshot:
     def testScreenshotComparisonNotEqual(self):
         assert self.screenshotProcess.equals(self.first, self.third) == False
 
-    # def testScreenshotSearchFound(self):
-    #     loc = {'View': 'SomeView', 'Date': datetime.datetime.now().date().isoformat(), 'Function': 'screenshot1.png'}
-    #     assert self.screenshotProcess.search(loc) == True
-    #
-    # def testScreenshotSearchNotFound(self):
-    #     loc = {'View': 'SomeView', 'Date': datetime.datetime.now().date().isoformat(), 'Function': 'screenshot4.png'}
-    #     with pytest.raises(KeyError):
-    #         self.screenshotProcess.search(loc)
-
     def testScreenshotStore(self):
         assert self.screenshotProcess.store(self.firstScreenshot) == True
 
@@ -113,10 +104,6 @@ class TestScreenshot:
     def testScreenshotInvalidParametersStore(self):
         with pytest.raises(TypeError):
             self.screenshotProcess.store(self.nonExistentScreenLoc)
-
-    # def testScreenshotSearchInvalidLocation(self):
-    #     with pytest.raises(TypeError):
-    #         self.screenshotProcess.search(self.nonExistentScreenLoc)
 
     def testGetDiffVoidParameters(self):
         self.screenshotProcess.img1 = None
@@ -179,7 +166,7 @@ class TestScreenshot:
         assert self.screenshotProcess.getChange() is None
 
     def testLocateImageForDiff(self):
-        assert self.screenshotProcess.locateImgForDiff(self.firstScreenshot) is not None
+        assert self.screenshotProcess.locateImgForDiff(self.thirdScreenshot) is not None
 
     def testLocateImageForDiffInvalidLocation(self):
         loc = {'View': 'SomeView', 'Date': datetime.datetime.now().date().isoformat(), 'Function': 'screenshot4.png'}
@@ -187,6 +174,11 @@ class TestScreenshot:
 
     def testRun(self):
         self.screenshotProcess.run()
+        view = self.thirdScreenshot['View']
+        date = self.thirdScreenshot['Date']
+        diff = self.screenshotProcess.imgs[view][date]['screenshot3Diff.png']
+        change = self.screenshotProcess.imgs[view][date]['screenshot3Change.png']
+        assert diff is not None and change is not None
 
     def testSaveFS(self):
         assert self.screenshotProcess.saveFS() == True
