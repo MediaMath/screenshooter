@@ -1,58 +1,24 @@
 import screenshooter.config as config
 import pytest
 import datetime
-import shutil
-import os
 from PIL import Image
 from screenshooter.Screenshot import Screenshot
 import time
 
 
-def setup_module(module):
-    path = config.baseImageDir + "tmp"
-    today = datetime.datetime.now().date().isoformat()
-    imgsDir = config.baseProjectDir + "imgs/"
-    screen1 = "screenshot1.png"
-    screen2 = "screenshot2.png"
-    screen3 = "screenshot3.png"
-    fullPath = os.path.join(path, "SomeView", today)
-    if not os.path.exists(path):
-        os.mkdir(path)
-    if not os.path.exists(os.path.join(path, "SomeView")):
-        os.mkdir(os.path.join(path, "SomeView"))
-    if not os.path.exists(os.path.join(path, "SomeView", today)):
-        os.mkdir(fullPath)
-    if not os.path.exists(os.path.join(fullPath, screen1)):
-        shutil.copy2(imgsDir + screen1, fullPath)
-    if not os.path.exists(os.path.join(fullPath, screen2)):
-        shutil.copy2(imgsDir + screen2, fullPath)
-    if not os.path.exists(os.path.join(fullPath, screen3)):
-        shutil.copy2(imgsDir + screen3, fullPath)
-
-    savesPath = config.baseImageDir
-    fullSavesPath = os.path.join(savesPath, "SomeView", today)
-    if not os.path.exists(os.path.join(savesPath, "SomeView")):
-        os.mkdir(os.path.join(savesPath, "SomeView"))
-    if not os.path.exists(fullSavesPath):
-        os.mkdir(fullSavesPath)
-    if not os.path.exists(os.path.join(fullSavesPath, screen1)):
-        shutil.copy2(imgsDir + screen1, fullSavesPath)
-    if not os.path.exists(os.path.join(fullSavesPath, screen3)):
-        shutil.copy2(imgsDir + screen2, fullSavesPath)
-        os.rename(os.path.join(fullSavesPath, screen2), os.path.join(fullSavesPath, screen3))
-    if not os.path.exists(os.path.join(fullSavesPath, screen2)):
-        shutil.copy2(imgsDir + screen2, fullSavesPath)
-
-
-def teardown_module(module):
-    path = config.baseImageDir + "SomeView/"
-    shutil.rmtree(path)
-
-
 class TestScreenshot:
 
-    nonExistentScreenLoc = config.baseImageDir + "nonexistent.png"
-    directoryLocationOfScreenshots = config.baseImageDir
+    nonExistentScreenLoc = "blah"
+
+    @classmethod
+    def setup_class(cls):
+        cls.tmpImg1 = Image.open(config.baseProjectDir + "imgs/screenshot1.png")
+        cls.tmpImg2 = Image.open(config.baseProjectDir + "imgs/screenshot2.png")
+        cls.tmpImg3 = Image.open(config.baseProjectDir + "imgs/screenshot3.png")
+
+        cls.img1 = Image.open(config.baseProjectDir + "imgs/screenshot1.png")
+        cls.img2 = Image.open(config.baseProjectDir + "imgs/screenshot1.png")
+        cls.img3 = Image.open(config.baseProjectDir + "imgs/screenshot1.png")
 
     def setup_method(self, method):
         self.screenshotProcess = Screenshot()
@@ -60,20 +26,9 @@ class TestScreenshot:
         self.secondScreenshot = {'View': 'SomeView', 'Date': datetime.datetime.now().date().isoformat(), 'Function': 'screenshot2.png'}
         self.thirdScreenshot = {'View': 'SomeView', 'Date': datetime.datetime.now().date().isoformat(), 'Function': 'screenshot3.png'}
 
-        firstView = self.firstScreenshot['View']
-        firstDate = self.firstScreenshot['Date']
-        firstFunction = self.firstScreenshot['Function']
-        self.first = self.screenshotProcess.imgs['tmp'][firstView][firstDate][firstFunction]
-
-        secondView = self.secondScreenshot['View']
-        secondDate = self.secondScreenshot['Date']
-        secondFunction = self.secondScreenshot['Function']
-        self.second = self.screenshotProcess.imgs['tmp'][secondView][secondDate][secondFunction]
-
-        thirdView = self.thirdScreenshot['View']
-        thirdDate = self.thirdScreenshot['Date']
-        thirdFunction = self.thirdScreenshot['Function']
-        self.third = self.screenshotProcess.imgs['tmp'][thirdView][thirdDate][thirdFunction]
+        self.first = self.tmpImg1
+        self.second = self.tmpImg2
+        self.third = self.tmpImg3
 
     #
     # @classmethod
@@ -81,12 +36,29 @@ class TestScreenshot:
     #     return
     #
 
-    def testCollectFilesystemScreenshotsReturnsValue(self):
-        assert self.screenshotProcess.collectFSImgs(self.directoryLocationOfScreenshots) is not None
+    # Stub out the multi-dimensional dictionary so it isn't reliant on where it obtains the information from
+    @pytest.fixture(autouse = True)
+    def assignImages(self, monkeypatch):
+        view = self.firstScreenshot['View']
+        date = self.firstScreenshot['Date']
 
-    def testCollectFilesystemScreenshotsFails(self):
-        with pytest.raises(FileNotFoundError):
-            self.screenshotProcess.collectFSImgs(self.nonExistentScreenLoc)
+        monkeypatch.setitem(self.screenshotProcess.imgs, 'tmp', dict())
+        monkeypatch.setitem(self.screenshotProcess.imgs['tmp'], view, dict())
+        monkeypatch.setitem(self.screenshotProcess.imgs, view, dict())
+        monkeypatch.setitem(self.screenshotProcess.imgs['tmp'][view], date, dict())
+        monkeypatch.setitem(self.screenshotProcess.imgs[view], date, dict())
+
+        firstFunction = self.firstScreenshot['Function']
+        monkeypatch.setitem(self.screenshotProcess.imgs['tmp'][view][date], firstFunction, self.tmpImg1)
+        monkeypatch.setitem(self.screenshotProcess.imgs[view][date], firstFunction, self.img1)
+
+        secondFunction = self.secondScreenshot['Function']
+        monkeypatch.setitem(self.screenshotProcess.imgs['tmp'][view][date], secondFunction, self.tmpImg2)
+        monkeypatch.setitem(self.screenshotProcess.imgs[view][date], secondFunction, self.img2)
+
+        thirdFunction = self.thirdScreenshot['Function']
+        monkeypatch.setitem(self.screenshotProcess.imgs['tmp'][view][date], thirdFunction, self.tmpImg3)
+        monkeypatch.setitem(self.screenshotProcess.imgs[view][date], thirdFunction, self.img3)
 
     def testScreenshotComparisonEquals(self):
         assert self.screenshotProcess.equals(self.first, self.second) == True
@@ -178,10 +150,3 @@ class TestScreenshot:
         diff = self.screenshotProcess.imgs[view][date]['screenshot3Diff.png']
         change = self.screenshotProcess.imgs[view][date]['screenshot3Change.png']
         assert diff is not None and change is not None
-
-    def testSaveFS(self):
-        assert self.screenshotProcess.saveFS() == True
-
-    def testCleanupTmpDir(self):
-        self.screenshotProcess.cleanupFS()
-        assert os.path.exists(self.directoryLocationOfScreenshots + "tmp") == False
