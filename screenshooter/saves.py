@@ -67,3 +67,9 @@ class fsService():
         except IOError:
             return False
         return True
+
+
+class s3Service():
+
+    def __init__(self):
+        pass

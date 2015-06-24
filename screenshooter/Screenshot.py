@@ -79,6 +79,7 @@ class Screenshot:
     def locateImgForDiff(self, loc):
         #find the oldest date stored and check if it has function, if so return location
         for dateDir in sorted(self.imgs[loc['View']], reverse = True):
+            loc['Date'] = dateDir
             imgReference = self.getImg(loc)
             if imgReference is not None:
                 return {'View': loc['View'], 'Date': dateDir, 'Function': loc['Function']}
