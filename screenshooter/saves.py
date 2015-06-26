@@ -1,9 +1,11 @@
+import io
 import os
 import fnmatch
 import screenshooter.config as config
 from PIL import Image
 import datetime
 import shutil
+import boto3 as boto
 
 
 class fsService():
@@ -72,4 +74,32 @@ class fsService():
 class s3Service():
 
     def __init__(self):
-        pass
+        self.boto = boto
+
+    def parseOutBackslash(self, location):
+        parsedString = location.split('/')
+        return {'count': len(parsedString), 'array': parsedString}
+
+    def concatInBackslash(self, *args):
+        val = ""
+        for arg in args:
+            val += arg + "/"
+        return val
+
+    def collectS3Images(self):
+        dictPics = dict()
+        s3 = self.boto.client('s3')
+        contents = s3.list_objects(Bucket = config.bucket)
+        for content in contents['Contents']:
+            parsedKey = self.parseOutBackslash(content['Key'])['array']
+            parse0 = parsedKey[0]
+            parse1 = parsedKey[1]
+            parse2 = parsedKey[2]
+            data = s3.get_object(Bucket = config.bucket, Key = content['Key'])
+            dataBytesIO = io.BytesIO(data['Body'])
+            if parse0 not in dictPics:
+                dictPics[parse0] = dict()
+            if parse1 not in dictPics[parse0]:
+                dictPics[parse0][parse1] = dict()
+            dictPics[parse0][parse1][parse2] = Image.open(dataBytesIO)
+        return dictPics
