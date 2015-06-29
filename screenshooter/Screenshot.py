@@ -1,5 +1,6 @@
 from PIL import Image
 from PIL import ImageChops
+import datetime
 
 
 class Screenshot:
@@ -33,22 +34,16 @@ class Screenshot:
         view = imgLoc['View']
         date = imgLoc['Date']
         function = imgLoc['Function']
-        try:
-            imgRevert = self.imgs[view][date][function]
-        except KeyError:
-            pass
+        today = datetime.datetime.now().date().isoformat()
 
         try:
             if view not in self.imgs:
                 self.imgs[view] = dict()
             if date not in self.imgs[view]:
-                self.imgs[view][date] = dict()
-            self.imgs[view][date]["new" + function] = self.imgs['tmp'][view][date][function]
+                self.imgs[view][today] = dict()
+            self.imgs[view][today]["new" + function] = self.imgs['tmp'][view][date][function]
         except KeyError:
-            if imgRevert is None:
-                del self.imgs[view][date][function]
-            else:
-                self.imgs[view][date][function] = imgRevert
+            del self.imgs[view][today][function]
             return False
 
         if diffImg is not None or changeImg is not None:
@@ -56,21 +51,21 @@ class Screenshot:
                 imgName = function.partition('.')
                 if diffImg is not None:
                     diffName = "new" + imgName[0] + "Diff.png"
-                    self.imgs[view][date][diffName] = diffImg
+                    self.imgs[view][today][diffName] = diffImg
                 if changeImg is not None:
                     changeName = "new" + imgName[0] + "Change.png"
-                    self.imgs[view][date][changeName] = changeImg
+                    self.imgs[view][today][changeName] = changeImg
             except KeyError:
                 #Not sure if still executes under single try if only one fails
                 try:
-                    del self.imgs[view][date][diffName]
+                    del self.imgs[view][today][diffName]
                 except KeyError:
                     pass
                 try:
-                    del self.imgs[view][date][changeName]
+                    del self.imgs[view][today][changeName]
                 except KeyError:
                     pass
-                self.imgs[view][date][function] = imgRevert
+                del self.imgs[view][today][function]
                 return False
 
         return True
@@ -199,75 +194,3 @@ class Screenshot:
                         change = self.getChange()
                     self.store(modifiedLoc, diff, change)
         return True
-
-#Documenting terminal completion
-#
-#
-#
-#
-
-#Not used code keeping for concepts that may need later
-
-    # def search(self, loc):
-    #     view = loc['View']
-    #     date = loc['Date']
-    #     function = loc['Function']
-    #     try:
-    #         img = self.imgs['tmp'][view][date][function]
-    #     except KeyError:
-    #         raise KeyError("There is no image found at the location provided for the temp image")
-    #     for dateDir in self.imgs[view]:
-    #         try:
-    #             imgReference = self.imgs[view][dateDir][function]
-    #         except KeyError:
-    #             continue
-    #         if img.mode != imgReference.mode:
-    #             continue
-    #         if self.equals(img, imgReference):
-    #             return True
-    #     return False
-
-    #method uses filesystem to perform searching, code needs to change
-    #in order to implement blob storage query
-    # def search(self, fullLoc = None, name = None):
-    #     if name is None and fullLoc is None:
-    #         raise UnboundLocalError("Both parameters are null please provide at least one parameter")
-    #     elif name is not None and fullLoc is None:
-    #         loc = config.baseImageDir + "tmp/" + name
-    #     if fullLoc is not None:
-    #         loc = fullLoc
-    #
-    #     # img = self.exists(loc)
-    #     return self.searchImg(img, loc)
-    #
-    # def searchImg(self, img, loc):
-    #     if img is None:
-    #         return False
-    #     for root, dirnames, filenames in os.walk(config.baseImageDir):
-    #         for filename in fnmatch.filter(filenames, "*" + config.pictureType):
-    #             fileLoc = os.path.join(root, filename)
-    #             if fileLoc == loc:
-    #                 continue
-    #             imgReference = Image.open(fileLoc)
-    #             if img.mode != imgReference.mode:
-    #                 continue
-    #             if self.equals(img, imgReference):
-    #                 return True
-    #     return False
-
-        #     today = datetime.datetime.now()
-        #     path = config.baseImageDir + "SomeView/"
-        #     if not os.path.exists(path):
-        #         os.mkdir(path)
-        #     outputPath = path + today.date().isoformat() + "/"
-        #     if not os.path.exists(outputPath):
-        #         os.mkdir(outputPath)
-        #     filename = "{0}_{1}_{2}_{3}".format(today.hour, today.minute,
-        #                                         today.second, today.microsecond)
-        #     img.save(outputPath + filename + config.pictureType)
-        # except IOError:
-        #     raise
-        # except AttributeError:
-        #     raise
-        #
-        # return True

@@ -128,6 +128,8 @@ class s3Service():
         for view in imgs:
             if view == 'tmp':
                 continue
+            if today not in imgs[view]:
+                continue
             for function in fnmatch.filter(imgs[view][today], "new*"):
                 bytesImgIO = io.BytesIO()
                 imgs[view][today][function].save(bytesImgIO, "PNG")
