@@ -92,6 +92,7 @@ class s3Service():
         contents = s3.list_objects(Bucket = config.bucket)
         for content in contents['Contents']:
             parsedKey = self.parseOutBackslash(content['Key'])['array']
+            #TODO: Add in error checking for  # of keys
             parse0 = parsedKey[0]
             parse1 = parsedKey[1]
             parse2 = parsedKey[2]

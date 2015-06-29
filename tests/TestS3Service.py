@@ -1,3 +1,4 @@
+import io
 import pytest
 from PIL import Image
 import screenshooter.config as config
@@ -62,5 +63,8 @@ class s3():
         return{'Contents': [{'Key': "SomeView/today/screenshot1.png"}]}
 
     def get_object(self, **kwargs):
-        byteImg = Image.open(config.baseProjectDir + "imgs/screenshot1.png").tobytes()
-        return {'Body': byteImg}
+        bytesImgIO = io.BytesIO()
+        byteImg = Image.open(config.baseProjectDir + "imgs/screenshot1.png")
+        byteImg.save(bytesImgIO, "PNG")
+        bytesImgIO.seek(0)
+        return {'Body': bytesImgIO.read()}
