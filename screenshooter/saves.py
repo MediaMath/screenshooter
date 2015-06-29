@@ -104,3 +104,21 @@ class s3Service():
                 dictPics[parse0][parse1] = dict()
             dictPics[parse0][parse1][parse2] = Image.open(dataBytesIO)
         return dictPics
+
+    def saveS3(self, imgs):
+        print(imgs)
+        responses = list()
+        count = 0
+        s3 = self.boto.client('s3')
+        today = datetime.datetime.now().date().isoformat()
+        for view in imgs:
+            if view == 'tmp':
+                continue
+            for function in imgs[view][today]:
+                bytesImgIO = io.BytesIO()
+                imgs[view][today][function].save(bytesImgIO, "PNG")
+                bytesImgIO.seek(0)
+                bytesToSave = bytesImgIO.read()
+                responses.append(s3.put_object(Body = bytesToSave, Bucket = config.bucket, Key = self.concatInBackslash(view, today, function)))
+                count += 1
+        return {'count': count, 'responses': responses}
