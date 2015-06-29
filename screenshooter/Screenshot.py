@@ -35,7 +35,7 @@ class Screenshot:
         function = imgLoc['Function']
         try:
             imgRevert = self.imgs[view][date][function]
-        except:
+        except KeyError:
             pass
 
         try:
@@ -43,8 +43,8 @@ class Screenshot:
                 self.imgs[view] = dict()
             if date not in self.imgs[view]:
                 self.imgs[view][date] = dict()
-            self.imgs[view][date][function] = self.imgs['tmp'][view][date][function]
-        except:
+            self.imgs[view][date]["new" + function] = self.imgs['tmp'][view][date][function]
+        except KeyError:
             if imgRevert is None:
                 del self.imgs[view][date][function]
             else:
@@ -55,12 +55,12 @@ class Screenshot:
             try:
                 imgName = function.partition('.')
                 if diffImg is not None:
-                    diffName = imgName[0] + "Diff.png"
+                    diffName = "new" + imgName[0] + "Diff.png"
                     self.imgs[view][date][diffName] = diffImg
                 if changeImg is not None:
-                    changeName = imgName[0] + "Change.png"
+                    changeName = "new" + imgName[0] + "Change.png"
                     self.imgs[view][date][changeName] = changeImg
-            except:
+            except KeyError:
                 #Not sure if still executes under single try if only one fails
                 try:
                     del self.imgs[view][date][diffName]

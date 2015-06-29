@@ -147,6 +147,6 @@ class TestScreenshot:
         self.screenshotProcess.run()
         view = self.thirdScreenshot['View']
         date = self.thirdScreenshot['Date']
-        diff = self.screenshotProcess.imgs[view][date]['screenshot3Diff.png']
-        change = self.screenshotProcess.imgs[view][date]['screenshot3Change.png']
+        diff = self.screenshotProcess.imgs[view][date]['newscreenshot3Diff.png']
+        change = self.screenshotProcess.imgs[view][date]['newscreenshot3Change.png']
         assert diff is not None and change is not None

@@ -31,15 +31,15 @@ class TestS3Service():
         monkeypatch.setitem(self.imgs['tmp'][view], date, dict())
         monkeypatch.setitem(self.imgs[view], date, dict())
 
-        firstFunction = 'screenshot1.png'
+        firstFunction = 'newscreenshot1.png'
         monkeypatch.setitem(self.imgs['tmp'][view][date], firstFunction, self.tmpImg1)
         monkeypatch.setitem(self.imgs[view][date], firstFunction, self.img1)
 
-        secondFunction = 'screenshot2.png'
+        secondFunction = 'newscreenshot2.png'
         monkeypatch.setitem(self.imgs['tmp'][view][date], secondFunction, self.tmpImg2)
         monkeypatch.setitem(self.imgs[view][date], secondFunction, self.img2)
 
-        thirdFunction = 'screenshot3.png'
+        thirdFunction = 'newscreenshot3.png'
         monkeypatch.setitem(self.imgs['tmp'][view][date], thirdFunction, self.tmpImg3)
         monkeypatch.setitem(self.imgs[view][date], thirdFunction, self.img3)
 
@@ -51,6 +51,10 @@ class TestS3Service():
         dictionary = "dictionary"
         some = "some"
         assert ("/" in self.s3.concatInBackslash(some, dictionary, values)) == True
+
+    def testRemoveNew(self):
+        val = "newPhrase"
+        assert self.s3.removeNew(val) == "Phrase"
 
     def testCollectImagesFromS3(self, monkeypatch):
         monkeypatch.setattr(self.s3, 'boto', boto())

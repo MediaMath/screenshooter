@@ -45,6 +45,13 @@ class fsService():
         dictPics['tmp'] = screenshotsTemp
         return dictPics
 
+    def removeNew(self, val):
+        output = ""
+        parsedVals = val.split("new")
+        for parsedval in parsedVals:
+            output += parsedval
+        return output
+
     def saveFS(self, imgs):
         if imgs is None:
             raise ("Can not save anything, the multi-dimensional dictionary is None")
@@ -55,9 +62,9 @@ class fsService():
                     os.mkdir(os.path.join(config.baseImageDir, view))
                 if not os.path.exists(os.path.join(config.baseImageDir, view, today)):
                     os.mkdir(os.path.join(config.baseImageDir, view, today))
-                for function in imgs[view][today]:
+                for function in fnmatch.filter(imgs[view][today], "new*"):
                     imgs[view][today][function].save(os.path.join(config.baseImageDir, view,
-                                                                  today, function))
+                                                                  today, self.removeNew(function)))
             return True
         except (KeyError, IOError):
             return False
@@ -86,13 +93,21 @@ class s3Service():
             val += arg + "/"
         return val
 
+    def removeNew(self, val):
+        output = ""
+        parsedVals = val.split("new")
+        for parsedval in parsedVals:
+            output += parsedval
+        return output
+
     def collectS3Images(self):
         dictPics = dict()
         s3 = self.boto.client('s3')
         contents = s3.list_objects(Bucket = config.bucket)
         for content in contents['Contents']:
             parsedKey = self.parseOutBackslash(content['Key'])['array']
-            #TODO: Add in error checking for  # of keys
+            if len(parsedKey) > 3:
+                continue
             parse0 = parsedKey[0]
             parse1 = parsedKey[1]
             parse2 = parsedKey[2]
@@ -106,7 +121,6 @@ class s3Service():
         return dictPics
 
     def saveS3(self, imgs):
-        print(imgs)
         responses = list()
         count = 0
         s3 = self.boto.client('s3')
@@ -114,11 +128,12 @@ class s3Service():
         for view in imgs:
             if view == 'tmp':
                 continue
-            for function in imgs[view][today]:
+            for function in fnmatch.filter(imgs[view][today], "new*"):
                 bytesImgIO = io.BytesIO()
                 imgs[view][today][function].save(bytesImgIO, "PNG")
                 bytesImgIO.seek(0)
                 bytesToSave = bytesImgIO.read()
-                responses.append(s3.put_object(Body = bytesToSave, Bucket = config.bucket, Key = self.concatInBackslash(view, today, function)))
+                responses.append(s3.put_object(Body = bytesToSave, Bucket = config.bucket,
+                                               Key = self.concatInBackslash(view, today, self.removeNew(function))))
                 count += 1
         return {'count': count, 'responses': responses}
