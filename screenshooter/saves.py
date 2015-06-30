@@ -90,7 +90,10 @@ class s3Service():
     def concatInBackslash(self, *args):
         val = ""
         for arg in args:
-            val += arg + "/"
+            if "." not in arg:
+                val += arg + "/"
+            else:
+                val += arg
         return val
 
     def removeNew(self, val):
@@ -102,17 +105,20 @@ class s3Service():
 
     def collectS3Images(self):
         dictPics = dict()
-        s3 = self.boto.client('s3')
+        session = self.boto.session.Session(aws_access_key_id = config.accessKey, aws_secret_access_key = config.secretKey)
+        s3 = session.client('s3')
         contents = s3.list_objects(Bucket = config.bucket)
         for content in contents['Contents']:
+            if content['Size'] == 0:
+                continue
             parsedKey = self.parseOutBackslash(content['Key'])['array']
-            if len(parsedKey) > 3:
+            if len(parsedKey) != 3:
                 continue
             parse0 = parsedKey[0]
             parse1 = parsedKey[1]
             parse2 = parsedKey[2]
             data = s3.get_object(Bucket = config.bucket, Key = content['Key'])
-            dataBytesIO = io.BytesIO(data['Body'])
+            dataBytesIO = io.BytesIO(data['Body'].read())
             if parse0 not in dictPics:
                 dictPics[parse0] = dict()
             if parse1 not in dictPics[parse0]:
@@ -121,9 +127,12 @@ class s3Service():
         return dictPics
 
     def saveS3(self, imgs):
+        if imgs is None:
+            raise ("Can not save anything, the multi-dimensional dictionary is None")
         responses = list()
         count = 0
-        s3 = self.boto.client('s3')
+        session = self.boto.session.Session(aws_access_key_id = config.accessKey, aws_secret_access_key = config.secretKey)
+        s3 = session.client('s3')
         today = datetime.datetime.now().date().isoformat()
         for view in imgs:
             if view == 'tmp':
@@ -136,6 +145,6 @@ class s3Service():
                 bytesImgIO.seek(0)
                 bytesToSave = bytesImgIO.read()
                 responses.append(s3.put_object(Body = bytesToSave, Bucket = config.bucket,
-                                               Key = self.concatInBackslash(view, today, self.removeNew(function))))
+                                               Key = self.concatInBackslash(view, today, self.removeNew(function)), ContentType = "image/png"))
                 count += 1
         return {'count': count, 'responses': responses}

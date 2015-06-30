@@ -10,4 +10,9 @@ pictureType = ".png"  # must contain period
 baseProjectDir = "/Users/" + user + "/Documents/Projects/screenshot/"
 
 #Amazon specific parameters
-bucket = "nameOfYourBucket"
+bucket = "dev-compass-automation"  # "nameOfYourBucket"
+profile = "emoyal"  # "yourUsername"
+
+# Keys
+accessKey = "yourAccessKey"
+secretKey = "yourSecretKey"

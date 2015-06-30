@@ -75,6 +75,14 @@ class boto():
     def client(self, arg):
         return s3()
 
+    class session():
+        class Session():
+            def __init__(self, **kwargs):
+                pass
+
+            def client(self, *args):
+                return s3()
+
 
 class s3():
 
@@ -82,14 +90,14 @@ class s3():
         pass
 
     def list_objects(self, **kwargs):
-        return{'Contents': [{'Key': "SomeView/today/screenshot1.png"}]}
+        return{'Contents': [{'Key': "SomeView/today/screenshot1.png", 'Size': 1}]}
 
     def get_object(self, **kwargs):
         bytesImgIO = io.BytesIO()
         byteImg = Image.open(config.baseProjectDir + "imgs/screenshot1.png")
         byteImg.save(bytesImgIO, "PNG")
         bytesImgIO.seek(0)
-        return {'Body': bytesImgIO.read()}
+        return {'Body': bytesImgIO}
 
     def put_object(self, **kwargs):
         return {"Doesn't": "matter"}
