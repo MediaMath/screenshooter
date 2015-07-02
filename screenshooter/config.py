@@ -1,5 +1,6 @@
+import os
 #User specific Parameters
-user = "emoyal"  # "yourUsername"  # i.e emoyal
+user = os.environ['USER']   # "yourUsername"
 
 #Global Parameters set here
 
@@ -10,9 +11,9 @@ pictureType = ".png"  # must contain period
 baseProjectDir = "/Users/" + user + "/Documents/Projects/screenshot/"
 
 #Amazon specific parameters
-bucket = "dev-compass-automation"  # "nameOfYourBucket"
-profile = "emoyal"  # "yourUsername"
+bucket = os.environ['S3BUCKET']  # "nameOfYourBucket"
+profile = os.environ['S3USER']  # "yourUsername"
 
 # Keys
-accessKey = "yourAccessKey"
-secretKey = "yourSecretKey"
+accessKey = os.environ['S3ACCESSKEY']
+secretKey = os.environ['S3SECRETKEY']

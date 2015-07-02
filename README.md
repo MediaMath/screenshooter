@@ -125,3 +125,7 @@ getChange(originalLoc = original, modifiedLoc = modified)
 - [x] Clean up directory structure / rename things
 - [x] Add Amazon S3 support
 - [ ] Update Readme
+
+###Things that should be added to Readme
+- [ ] How to set and unset environment variables for virtual environments
+- [ ] How Capsule and its various functions work / should be called
