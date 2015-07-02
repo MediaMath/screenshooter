@@ -65,3 +65,9 @@ class TestCapsule():
         self.driver.get("http://www.w3schools.com/tags/tryit.asp?filename=tryhtml_form_submit")
         self.capsule.clickButton(self.driver, "inputTestView", "inputSubmissionTest", True)
         assert self.capsule.imgs['tmp']["inputTestView"][self.today]["inputSubmissionTest.png"] is not None
+
+    @skip
+    def testGenerateDiffs(self):
+        self.driver.get("http://google.com")
+        self.capsule.screenshot(self.driver, "HompageView", "GenerateDiffsTest")
+        assert self.capsule.generateDiffs() == True

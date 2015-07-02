@@ -122,5 +122,6 @@ getChange(originalLoc = original, modifiedLoc = modified)
 - [x] Compare two images and get the modified difference from the original
 - [x] Add image / diffs to specific directory based on whether or not the image already exists in storage
 - [x] Iterate through a base directory to create the diffs
-- [ ] Clean up directory structure / rename things
-- [ ] Add Amazon S3 support
+- [x] Clean up directory structure / rename things
+- [x] Add Amazon S3 support
+- [ ] Update Readme

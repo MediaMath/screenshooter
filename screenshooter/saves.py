@@ -13,8 +13,8 @@ class fsService():
     def __init__(self):
         pass
 
-    def collectFSImgs(self, baseDir):
-        dictPics = dict()
+    def collectFSImgs(self, baseDir, imgs = None):
+        dictPics = imgs or dict()
         for dirView in fnmatch.filter(os.listdir(baseDir), "*View"):
             if os.path.isdir(os.path.join(baseDir, dirView)):
                 screenshotsView = dict()
@@ -28,7 +28,7 @@ class fsService():
                         screenshotsView[dirDate] = screenshotsDate
                 dictPics[dirView] = screenshotsView
 
-        #this portion only grabs the images in the tmp directory
+        #this portion only grabs the images in the tmp directory - I don't think I need this (revisit)
         screenshotsTemp = dict()
         for dirView in fnmatch.filter(os.listdir(os.path.join(baseDir, "tmp")), "*View"):
             if os.path.isdir(os.path.join(baseDir, "tmp", dirView)):
@@ -103,8 +103,8 @@ class s3Service():
             output += parsedval
         return output
 
-    def collectS3Images(self):
-        dictPics = dict()
+    def collectS3Images(self, imgs = None):
+        dictPics = imgs or dict()
         session = self.boto.session.Session(aws_access_key_id = config.accessKey, aws_secret_access_key = config.secretKey)
         s3 = session.client('s3')
         contents = s3.list_objects(Bucket = config.bucket)
