@@ -10,7 +10,7 @@ from screenshooter.Screenshot import Screenshot
 def setup_module(module):
     path = config.baseImageDir + "tmp"
     today = datetime.datetime.now().date().isoformat()
-    imgsDir = config.baseProjectDir + "imgs/"
+    imgsDir = config.baseProjectDir + "tests/imgs/"
     screen1 = "screenshot1.png"
     screen2 = "screenshot2.png"
     screen3 = "screenshot3.png"

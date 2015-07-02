@@ -12,13 +12,13 @@ class TestScreenshot:
 
     @classmethod
     def setup_class(cls):
-        cls.tmpImg1 = Image.open(config.baseProjectDir + "imgs/screenshot1.png")
-        cls.tmpImg2 = Image.open(config.baseProjectDir + "imgs/screenshot2.png")
-        cls.tmpImg3 = Image.open(config.baseProjectDir + "imgs/screenshot3.png")
+        cls.tmpImg1 = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
+        cls.tmpImg2 = Image.open(config.baseProjectDir + "tests/imgs/screenshot2.png")
+        cls.tmpImg3 = Image.open(config.baseProjectDir + "tests/imgs/screenshot3.png")
 
-        cls.img1 = Image.open(config.baseProjectDir + "imgs/screenshot1.png")
-        cls.img2 = Image.open(config.baseProjectDir + "imgs/screenshot1.png")
-        cls.img3 = Image.open(config.baseProjectDir + "imgs/screenshot1.png")
+        cls.img1 = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
+        cls.img2 = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
+        cls.img3 = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
 
     def setup_method(self, method):
         self.screenshotProcess = Screenshot()

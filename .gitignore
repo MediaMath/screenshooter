@@ -1,9 +1,2 @@
-__pycache__/__init__.cpython-34.pyc
-__pycache__/config.cpython-34.pyc
-__pycache__/Screenshot.cpython-34.pyc
-__pycache__/TestScreenshot.cpython-34-PYTEST.pyc
-screenshooter/__pycache__/__init__.cpython-34.pyc
-screenshooter/__pycache__/config.cpython-34.pyc
-screenshooter/__pycache__/Screenshot.cpython-34.pyc
-tests/__pycache__/__init__.cpython-34.pyc
-tests/__pycache__/TestScreenshot.cpython-34-PYTEST.pyc
+*.pyc
+sensitive.py

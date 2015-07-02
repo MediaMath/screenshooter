@@ -13,13 +13,13 @@ class TestS3Service():
 
     @pytest.fixture()
     def assignImages(self, monkeypatch):
-        self.tmpImg1 = Image.open(config.baseProjectDir + "imgs/screenshot1.png")
-        self.tmpImg2 = Image.open(config.baseProjectDir + "imgs/screenshot2.png")
-        self.tmpImg3 = Image.open(config.baseProjectDir + "imgs/screenshot3.png")
+        self.tmpImg1 = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
+        self.tmpImg2 = Image.open(config.baseProjectDir + "tests/imgs/screenshot2.png")
+        self.tmpImg3 = Image.open(config.baseProjectDir + "tests/imgs/screenshot3.png")
 
-        self.img1 = Image.open(config.baseProjectDir + "imgs/screenshot1.png")
-        self.img2 = Image.open(config.baseProjectDir + "imgs/screenshot1.png")
-        self.img3 = Image.open(config.baseProjectDir + "imgs/screenshot1.png")
+        self.img1 = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
+        self.img2 = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
+        self.img3 = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
 
         self.imgs = dict()
         view = 'SomeView'
