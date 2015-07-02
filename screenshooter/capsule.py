@@ -36,8 +36,28 @@ class Capsule():
     def scrollPage(self):
         pass
 
-    def clickButton(self):
-        pass
+    def clickButton(self, driver, view, function, inputButton = False, classTag = None, idTag = None):  # not working for inputButton
+        if not inputButton:
+            tag = 'button['
+        else:
+            tag = "input[@type='submit' and"
+
+        if classTag and not idTag:
+            xPath = "//" + tag + "@class='" + classTag + "'][1]"
+        elif not classTag and idTag:
+            xPath = "//" + tag + "@id='" + idTag + "'][1]"
+        elif classTag and idTag:
+            xPath = "//" + tag + "@class='" + classTag + "' and @id='" + idTag + "'][1]"
+        else:
+            if not inputButton:
+                tag = tag.partition('[')[0]
+            else:
+                tag = tag.partition(' ')[0] + ']'
+            xPath = "//" + tag + "[1]"
+        print(xPath)
+        button = driver.find_element_by_xpath(xPath)
+        button.click()
+        self.screenshot(driver, view, function)
 
     def clickHyperlink(self):
         pass
@@ -46,4 +66,7 @@ class Capsule():
         pass
 
     def inputSubmit(self):
+        pass
+
+    def clickElement(self, driver, view, function, xPath):
         pass
