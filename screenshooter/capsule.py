@@ -10,6 +10,26 @@ class Capsule():
         self.differ = Screenshot()
         self.imgs = self.differ.imgs
 
+    def getXPath(self, **kwargs):
+        tag = kwargs.get("tag", None)
+        classTag = kwargs.get("classTag", None)
+        idTag = kwargs.get("idTag", None)
+        value = kwargs.get("value", None)
+        text = kwargs.get("text", None)
+
+        xPath = "//" + tag
+
+        if classTag:
+            xPath += "[@class='" + classTag + "']"
+        if idTag:
+            xPath += "[@id='" + idTag + "']"
+        if value:
+            xPath += "[@value='" + value + "']"
+        if text:
+            xPath += "[@text()='" + text + "']"
+
+        return xPath += "[1]"
+
     def screenshot(self, driver, view, function):
         today = datetime.now().date().isoformat()
 
@@ -33,40 +53,41 @@ class Capsule():
         time.sleep(5)
         self.screenshot(driver, view, function)
 
-    def scrollPage(self):
-        pass
+    def scrollPage(self, driver, view, function):
+        height = driver.execute_script("return window.document.body.scrollHeight;")
+        visibleHeight = driver.execute_script("return window.innerHeight;")
+        moveHeight = visibleHeight
+        i = 1
+        while moveHeight < height:
+            driver.execute_script("window.scrollTo(0, " + moveHeight + ");")
+            self.screenshot(driver, view, function + "[" + i + "]")
+            moveHeight += visibleHeight
+            i += 1
 
-    def clickButton(self, driver, view, function, inputButton = False, classTag = None, idTag = None):  # not working for inputButton
-        if not inputButton:
-            tag = 'button['
-        else:
-            tag = "input[@type='submit' and"
+    def clickButton(self, driver, view, function, classTag = None, idTag = None):
+        xPath = getXPath(tag ='button', classTag = classTag, idTag = idTag )
+        self.clickElement(driver, view, function, xPath)
 
-        if classTag and not idTag:
-            xPath = "//" + tag + "@class='" + classTag + "'][1]"
-        elif not classTag and idTag:
-            xPath = "//" + tag + "@id='" + idTag + "'][1]"
-        elif classTag and idTag:
-            xPath = "//" + tag + "@class='" + classTag + "' and @id='" + idTag + "'][1]"
-        else:
-            if not inputButton:
-                tag = tag.partition('[')[0]
-            else:
-                tag = tag.partition(' ')[0] + ']'
-            xPath = "//" + tag + "[1]"
-        print(xPath)
-        button = driver.find_element_by_xpath(xPath)
-        button.click()
-        self.screenshot(driver, view, function)
+    def clickInputButton(self, driver, view, function, classTag = None, idTag = None, value = None):
+        xPath = getXPath(tag = "input[@type = 'submit']", classTag = classTag, idTag = idTag, value = value)
+        self.clickElement(driver, view, function, xPath)
 
-    def clickHyperlink(self):
-        pass
+    def clickHyperlink(self, driver, view, function, **kwargs):
+        xPath = getXPath(tag = "a", **kwargs)
+        self.clickElement(driver, view, function, xPath)
 
-    def clickTab(self):
-        pass
+    def inputEnter(self, driver, view, function, inputText, **kwargs):
+        xPath = getXPath(tag = "input[@type='text']", **kwargs)
 
-    def inputSubmit(self):
-        pass
+        element = driver.find_element_by_xpath(xPath)
+        element.send_keys(inputText)
+        self.enterElement(driver, view, function, element)
 
     def clickElement(self, driver, view, function, xPath):
-        pass
+        element = driver.find_element_by_xpath(xPath)
+        element.click()
+        self.screenshot(driver, view, function)
+
+    def enterElement(self, driver, view, function, element):
+        element.key_down(Keys.Enter).key_up(Keys.Enter).perform()
+        self.screenshot(driver, view, function)
