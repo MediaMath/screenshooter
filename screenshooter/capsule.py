@@ -16,6 +16,7 @@ class Capsule():
         idTag = kwargs.get("idTag", None)
         value = kwargs.get("value", None)
         text = kwargs.get("text", None)
+        name = kwargs.get("name", None)
 
         xPath = "//" + tag
 
@@ -27,6 +28,8 @@ class Capsule():
             xPath += "[@value='" + value + "']"
         if text:
             xPath += "[@text()='" + text + "']"
+        if name:
+            xPath += "[@name='" + name + "']"
 
         return xPath += "[1]"
 
@@ -85,7 +88,7 @@ class Capsule():
 
     def clickElement(self, driver, view, function, xPath):
         element = driver.find_element_by_xpath(xPath)
-        element.click()
+        element.click().perform()
         self.screenshot(driver, view, function)
 
     def enterElement(self, driver, view, function, element):

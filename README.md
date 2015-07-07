@@ -9,6 +9,7 @@ Documentation - Elan Moyal - MediaMath Manhattan
 - Locating Images to Perform Diffs
 - Diff
 - Change
+- Capsule
 - TO-DO
 
 ##Dependencies
@@ -113,6 +114,42 @@ original = {'View': someView, 'Date': someDate, 'Function': someFunction}
 modified = {'View': someOtherView, 'Date': someOtherDate, 'Function': someOtherFunction}
 getChange(originalLoc = original, modifiedLoc = modified)
 ```
+
+#Capsule
+
+####getXPath
+```python
+getXPath(**kwargs)
+```
+This method returns only the first element found based on the arguments given.
+
+Acceptable Key Word Arguments:
+- `tag = 'someHTMLTag'` i.e. `<button></button>`, `<a/>`, `<input></input>`, etc.
+- `classTag = 'cssClass'` i.e. `<button class="someClass"></button>`
+- `idTag = 'cssID'` i.e. `<button id="someID"></button>`
+- `value = 'inputValue'` i.e. `<input value="Hello"></input>`
+- `text = 'textContent'` i.e. `<input>Hello World!</input>`
+- `name = 'elementName'` i.e. `<button name="someName"></button>`
+
+####screenshot
+```python
+screenshot(driver, view, function)
+```
+- driver: the selenium driver used
+- view: what view are you currently in i.e. HomePage, AboutMe, etc. (can be more abstract if you wish)
+- function: what function are you using to take a screenshot (make sure this has a descriptive name so it can be easily identifiable as to what role the screenshot has)
+
+####clickElement
+```python
+clickElement(driver, view, function, xPath)
+```
+The `driver`, `view`, and `function` arguments are passed along to the screenshot call. The `xPath` argument is used to locate the correct element, then a click action is performed on that argument and a screenshot is taken.
+
+####enterElement
+```python
+enterElement(driver, view, function, element)
+```
+The `driver`, `view`, and `function` arguments are passed along to the screenshot call. The `element` argument is used to perform an enter key press on that element and then a screenshot is taken. The reason the whole element is taken instead of the xPath like the previous clickElement method is because often times data needs to be entered before the enter key is pressed, this allows for such data entry.
 
 ##TO-DO
 
