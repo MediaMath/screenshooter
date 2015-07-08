@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from datetime import datetime
 import pytest
+import time
 
 
 class TestCapsule():
@@ -36,7 +37,7 @@ class TestCapsule():
         i = 1
         while(True):
             try:
-                self.capsule.imgs['tmp']["HomePageView"][self.today]["getHomePage[" + str(i) + "].png"]
+                self.capsule.imgs['tmp']["HomePageView"][self.today]["getHomePage[" + str(i) + "].png"].show()
             except KeyError:
                 break
             i += 1
@@ -49,23 +50,30 @@ class TestCapsule():
         #self.capsule.imgs['tmp']["ButtonTestView"][self.today]["buttonTest.png"].show()
         assert self.capsule.imgs['tmp']["ButtonTestView"][self.today]["buttonTest.png"] is not None
 
-    # @skip
-    def testClickInputButton(self):
+    @skip
+    def testClickInputButtonWithIFrameName(self):
         self.driver.get("http://www.w3schools.com/tags/tryit.asp?filename=tryhtml_form_submit")
-        self.capsule.clickButton(self.driver, "ButtonTestView", "inputButtonTest", True)
+        self.capsule.clickInputButton(self.driver, "ButtonTestView", "inputButtonTest", "view", value = "Submit")
+        assert self.capsule.imgs['tmp']["ButtonTestView"][self.today]["inputButtonTest.png"] is not None
+
+    @skip
+    def testClickInputButtonWithIFrameID(self):
+        self.driver.get("http://www.w3schools.com/tags/tryit.asp?filename=tryhtml_form_submit")
+        self.capsule.clickInputButton(self.driver, "ButtonTestView", "inputButtonTest", "iframeResult", value = "Submit")
         assert self.capsule.imgs['tmp']["ButtonTestView"][self.today]["inputButtonTest.png"] is not None
 
     @skip
     def testClickHyperlink(self):
         self.driver.get("http://pytest.org")
-        self.capsule.clickHyperlink(self.driver, "HyperlinkTestView", "hyperlinkTest", "reference internal")
-        assert self.capsule.imgs['tmp']["HyperlinkTestView"][self.today]["hyperlinkeTest.png"] is not None and \
+        self.capsule.clickHyperlink(self.driver, "HyperlinkTestView", "hyperlinkTest", classTag = "reference internal")
+        assert self.capsule.imgs['tmp']["HyperlinkTestView"][self.today]["hyperlinkTest.png"] is not None and \
             self.driver.current_url == "http://pytest.org/latest/contents.html#toc"
 
     @skip
     def testInputWithEnterKeyPressed(self):
         self.driver.get("http://www.w3schools.com/tags/tryit.asp?filename=tryhtml_form_submit")
-        self.capsule.clickButton(self.driver, "inputTestView", "inputSubmissionTest", True)
+        self.capsule.inputEnter(self.driver, "inputTestView", "inputSubmissionTest", "Bobby", "view", name = "FirstName")
+        self.capsule.imgs['tmp']["inputTestView"][self.today]["inputSubmissionTest.png"].show()
         assert self.capsule.imgs['tmp']["inputTestView"][self.today]["inputSubmissionTest.png"] is not None
 
     @skip

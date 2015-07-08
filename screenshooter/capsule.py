@@ -64,35 +64,40 @@ class Capsule():
         moveHeight = visibleHeight
         i = 1
         while moveHeight < height:
-            driver.execute_script("window.scrollTo(0, " + moveHeight + ");")
-            self.screenshot(driver, view, function + "[" + i + "]")
+            driver.execute_script("window.scrollTo(0, " + str(moveHeight) + ");")
+            self.screenshot(driver, view, function + "[" + str(i) + "]")
             moveHeight += visibleHeight
             i += 1
 
-    def clickButton(self, driver, view, function, classTag = None, idTag = None):
-        xPath = self.getXPath(tag ='button', classTag = classTag, idTag = idTag)
-        self.clickElement(driver, view, function, xPath)
+    def clickButton(self, driver, view, function, iFrame = None, **kwargs):
+        xPath = self.getXPath(tag ='button', **kwargs)
+        self.clickElement(driver, view, function, xPath, iFrame)
 
-    def clickInputButton(self, driver, view, function, classTag = None, idTag = None, value = None):
-        xPath = self.getXPath(tag = "input[@type = 'submit']", classTag = classTag, idTag = idTag, value = value)
-        self.clickElement(driver, view, function, xPath)
+    def clickInputButton(self, driver, view, function, iFrame = None, **kwargs):
+        xPath = self.getXPath(tag = "input[@type='submit']", **kwargs)
+        self.clickElement(driver, view, function, xPath, iFrame)
 
-    def clickHyperlink(self, driver, view, function, **kwargs):
+    def clickHyperlink(self, driver, view, function, iFrame = None, **kwargs):
         xPath = self.getXPath(tag = "a", **kwargs)
-        self.clickElement(driver, view, function, xPath)
+        self.clickElement(driver, view, function, xPath, iFrame)
 
-    def inputEnter(self, driver, view, function, inputText, **kwargs):
+    def inputEnter(self, driver, view, function, inputText, iFrame = None, **kwargs):
         xPath = self.getXPath(tag = "input[@type='text']", **kwargs)
 
+        if iFrame:
+            driver.switch_to.frame(iFrame)
         element = driver.find_element_by_xpath(xPath)
+        element.clear()
         element.send_keys(inputText)
         self.enterElement(driver, view, function, element)
 
-    def clickElement(self, driver, view, function, xPath):
+    def clickElement(self, driver, view, function, xPath, iFrame = None):
+        if iFrame:
+            driver.switch_to.frame(iFrame)
         element = driver.find_element_by_xpath(xPath)
         element.click()
         self.screenshot(driver, view, function)
 
     def enterElement(self, driver, view, function, element):
-        element.key_down(Keys.ENTER).key_up(Keys.ENTER).perform()
+        element.send_keys(Keys.ENTER)
         self.screenshot(driver, view, function)
