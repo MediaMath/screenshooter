@@ -124,11 +124,11 @@ getXPath(**kwargs)
 This method returns only the first element found based on the arguments given.
 
 Acceptable Key Word Arguments:
-- `tag = 'someHTMLTag'` i.e. `<button></button>`, `<a/>`, `<input></input>`, etc.
+- `tag = 'someHTMLTag'` i.e. `<button></button>`, `<a></a>`, `<input>` etc.
 - `classTag = 'cssClass'` i.e. `<button class="someClass"></button>`
 - `idTag = 'cssID'` i.e. `<button id="someID"></button>`
-- `value = 'inputValue'` i.e. `<input value="Hello"></input>`
-- `text = 'textContent'` i.e. `<input>Hello World!</input>`
+- `value = 'inputValue'` i.e. `<input value="Hello">`
+- `text = 'textContent'` i.e. `<input type="text" value="textContent">`
 - `name = 'elementName'` i.e. `<button name="someName"></button>`
 
 ####screenshot
@@ -141,9 +141,9 @@ screenshot(driver, view, function)
 
 ####clickElement
 ```python
-clickElement(driver, view, function, xPath)
+clickElement(driver, view, function, xPath, iFrame = None)
 ```
-The `driver`, `view`, and `function` arguments are passed along to the screenshot call. The `xPath` argument is used to locate the correct element, then a click action is performed on that argument and a screenshot is taken.
+The `driver`, `view`, and `function` arguments are passed along to the screenshot call. The `iFrame` argument is used to switch focus to the frame given; works with either a name field or id field i.e. `<element id='value'>` or `<element name='value'`; defaults to None. The `xPath` argument is used to locate the correct element, then a click action is performed on that argument and a screenshot is taken.
 
 ####enterElement
 ```python
@@ -153,27 +153,31 @@ The `driver`, `view`, and `function` arguments are passed along to the screensho
 
 ####inputEnter
 ```python
-inputEnter(driver, view, function, inputText, **kwargs)
+inputEnter(driver, view, function, inputText, iFrame = None, **kwargs)
 ```
-This method makes calls to enterElement and getXPath, and `driver`, `view`, `function` and `kwargs` get passed in respectively. The `inputText` argument is used for the content that should be entered into the text box before enterElement has been called. This method makes use of the HTML tag `<input type="text" >inputText</input>`
+This method makes calls to enterElement and getXPath, and `driver`, `view`, `function` and `kwargs` get passed in respectively. The `inputText` argument is used for the content that should be entered into the text box before enterElement has been called. The `iFrame` argument is used to switch focus to the frame given; works with either a name or id field i.e. `<input name='value'>` or `<input id='value'>`; defaults to None.
+> This method makes use of the HTML tag `<input type="text" >inputText</input>`.
 
 ####clickButton
 ```python
-clickButton(driver, view, function, **kwargs)
+clickButton(driver, view, function, iFrame = None, **kwargs)
 ```
-This method makes calls to clickElement and getXPath, arguments are passed along respectively. This method makes use of the HTML5 tag `<button></button>`.
+This method makes calls to clickElement and getXPath, arguments are passed along respectively.
+> This method makes use of the HTML5 tag `<button></button>`.
 
 ####clickInputButton
 ```python
-clickInputButton(driver, view, function, **kwargs)
+clickInputButton(driver, view, function, iFrame = None, **kwargs)
 ```
-This method makes calls to clickElement and getXPath, arguments are passed along respectively. This method makes use of the HTML tag `<input type="submit" ></input>`.
+This method makes calls to clickElement and getXPath, arguments are passed along respectively.
+> This method makes use of the HTML tag `<input type="submit" ></input>`.
 
 ####clickHyperlink
 ```python
-clickHyperlink(driver, view, function, **kwargs)
+clickHyperlink(driver, view, function, iFrame = None, **kwargs)
 ```
-This method makes calls to clickElement and getXPath, arguments are passed along respectively. This method makes use of the HTML tag `<a href="url"></a>`.
+This method makes calls to clickElement and getXPath, arguments are passed along respectively.
+> This method makes use of the HTML tag `<a href="url"></a>`.
 
 ####getPage
 ```python

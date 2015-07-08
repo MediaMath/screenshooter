@@ -80,4 +80,4 @@ class TestCapsule():
     def testGenerateDiffs(self):
         self.driver.get("http://google.com")
         self.capsule.screenshot(self.driver, "HompageView", "GenerateDiffsTest")
-        assert self.capsule.generateDiffs() == True
+        assert self.capsule.generateDiffs("S3") == True

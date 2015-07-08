@@ -13,7 +13,7 @@ class fsService():
     def __init__(self):
         pass
 
-    def collectFSImgs(self, baseDir, imgs = None):
+    def collectImages(self, baseDir, imgs = None):
         dictPics = imgs or dict()
         for dirView in fnmatch.filter(os.listdir(baseDir), "*View"):
             if os.path.isdir(os.path.join(baseDir, dirView)):
@@ -52,7 +52,7 @@ class fsService():
             output += parsedval
         return output
 
-    def saveFS(self, imgs):
+    def save(self, imgs):
         if imgs is None:
             raise ("Can not save anything, the multi-dimensional dictionary is None")
         today = datetime.datetime.now().date().isoformat()
@@ -103,7 +103,7 @@ class s3Service():
             output += parsedval
         return output
 
-    def collectS3Images(self, imgs = None):
+    def collectImages(self, imgs = None):
         dictPics = imgs or dict()
         session = self.boto.session.Session(aws_access_key_id = config.accessKey, aws_secret_access_key = config.secretKey)
         s3 = session.client('s3')
@@ -126,7 +126,7 @@ class s3Service():
             dictPics[parse0][parse1][parse2] = Image.open(dataBytesIO)
         return dictPics
 
-    def saveS3(self, imgs):
+    def save(self, imgs):
         if imgs is None:
             raise ("Can not save anything, the multi-dimensional dictionary is None")
         responses = list()

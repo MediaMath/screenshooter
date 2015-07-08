@@ -101,3 +101,16 @@ class Capsule():
     def enterElement(self, driver, view, function, element):
         element.send_keys(Keys.ENTER)
         self.screenshot(driver, view, function)
+
+    def generateDiffs(self, serviceName):
+        if serviceName.upper() == "S3":
+            from screenshooter.saves import s3Service
+            service = s3Service()
+        elif serviceName.upper() == "FILESYSTEM":
+            pass
+
+        service.collectImages(self.differ.imgs)
+        self.differ.run()
+        service.save(self.differ.imgs)
+
+        return True
