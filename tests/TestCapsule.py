@@ -42,14 +42,14 @@ class TestCapsule():
             i += 1
         assert (i - 1) > 0
 
-    # @skip
+    @skip
     def testClickButton(self):
         self.driver.get("https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button")
         self.capsule.clickButton(self.driver, "ButtonTestView", "buttonTest", classTag = "only-icon", idTag = "advanced-menu")
-        self.capsule.imgs['tmp']["ButtonTestView"][self.today]["buttonTest.png"].show()
+        #self.capsule.imgs['tmp']["ButtonTestView"][self.today]["buttonTest.png"].show()
         assert self.capsule.imgs['tmp']["ButtonTestView"][self.today]["buttonTest.png"] is not None
 
-    @skip
+    # @skip
     def testClickInputButton(self):
         self.driver.get("http://www.w3schools.com/tags/tryit.asp?filename=tryhtml_form_submit")
         self.capsule.clickButton(self.driver, "ButtonTestView", "inputButtonTest", True)

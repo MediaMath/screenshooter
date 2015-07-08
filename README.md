@@ -151,17 +151,45 @@ enterElement(driver, view, function, element)
 ```
 The `driver`, `view`, and `function` arguments are passed along to the screenshot call. The `element` argument is used to perform an enter key press on that element and then a screenshot is taken. The reason the whole element is taken instead of the xPath like the previous clickElement method is because often times data needs to be entered before the enter key is pressed, this allows for such data entry.
 
-##TO-DO
+####inputEnter
+```python
+inputEnter(driver, view, function, inputText, **kwargs)
+```
+This method makes calls to enterElement and getXPath, and `driver`, `view`, `function` and `kwargs` get passed in respectively. The `inputText` argument is used for the content that should be entered into the text box before enterElement has been called. This method makes use of the HTML tag `<input type="text" >inputText</input>`
 
-- [x] Determine whether or not two images are identical
-- [x] Search through a directory recursively to identify equality
-- [x] Compare two images and get the combined difference between them
-- [x] Compare two images and get the modified difference from the original
-- [x] Add image / diffs to specific directory based on whether or not the image already exists in storage
-- [x] Iterate through a base directory to create the diffs
-- [x] Clean up directory structure / rename things
-- [x] Add Amazon S3 support
+####clickButton
+```python
+clickButton(driver, view, function, **kwargs)
+```
+This method makes calls to clickElement and getXPath, arguments are passed along respectively. This method makes use of the HTML5 tag `<button></button>`.
+
+####clickInputButton
+```python
+clickInputButton(driver, view, function, **kwargs)
+```
+This method makes calls to clickElement and getXPath, arguments are passed along respectively. This method makes use of the HTML tag `<input type="submit" ></input>`.
+
+####clickHyperlink
+```python
+clickHyperlink(driver, view, function, **kwargs)
+```
+This method makes calls to clickElement and getXPath, arguments are passed along respectively. This method makes use of the HTML tag `<a href="url"></a>`.
+
+####getPage
+```python
+getPage(driver, view, function, page, splash = False, ignoreSplash = True)
+```
+This method makes a call to screenshot and the arguments `driver`, `view`, and `function` are passed to it. The argument `page` is the url of the page you would like to visit, this must be in the format `http://pagetovisit.com` or `http://www.pagetovisit.com` where `https` is also valid or any other TLD i.e. `.net`, `.org`, etc. The argument `splash` is a boolean referencing if the page contains a splash page. The argument `ignoreSplash` is a boolean referencing whether to take a picture of the splash page as well or to just ignore it. By default there is no splash page and the splash page will be ignored. This method will route to a page and then take a screenshot.
+
+####scrollPage
+```python
+scrollPage(driver, view, function)
+```
+This method makes a call to screenshot and the arguments `driver`, `view`, and `function` are passed to it. This method will scroll the length of the viewable page (what you see on your screen) and then take a screenshot, doing this repeatedly until the entire page has been scrolled. Use this in conjunction with `getPage` to route to a specific page and screenshot every part of it.
+
+##TO-DO
 - [ ] Update Readme
+- [ ] Reorganize Readme
 
 ###Things that should be added to Readme
 - [ ] How to set and unset environment variables for virtual environments
