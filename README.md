@@ -66,18 +66,19 @@ For more info about [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org
 Info acquired from this [blog](http://irisbeta.com/article/30408704/environment-variables-and-virtualenv/)
 
 To set up environment variables that exist only in specific virtual environments the following can be done.
+
 1. Activate the virtual envirionment you would like to use.
-    ```
-    $ workon envName
-    ```
+```
+$ workon envName
+```
 2. Edit the postactivate script
-    ```
-    $ nano $VIRTUAL_ENV/bin/postactivate
-    ```
+```
+$ nano $VIRTUAL_ENV/bin/postactivate
+```
 3. Set envirionment variables (there shouldn't be a space before or after the = sign)
-    ```
-    export USERNAME="OptimusPrime"
-    ```
+```
+export USERNAME="OptimusPrime"
+```
 4. Exit via `CONTROL + x` and accept all
 
 To test
@@ -279,6 +280,33 @@ Checks for an exact match of images. Currently is unable to compute if the image
 Returns the location of the already stored image. Requires the dictionary path to the temp image. Loops through the dictionary of images based on the temp image's view dictionary (this results in a dictionary of date dictionaries). The date dictionaries are sorted in descending order so that the oldest date (the one closest to now) is first. The first date is then used to attempt a retrieval of the image already stored, if it doesn't find one it moves on to the next date; if it does find one the dictionary location of that image is returned.
 
 ###Capsule
+Contents:
+- [Base Methods](#base-methods)
+  - [clickElement](#clickelement)
+  - [enterElement](#enterelement)
+  - [getXPath](#getxpath)
+  - [screenshot][#screenshot]
+- [Methods](#methods)
+  - [clickButton](#clickbutton)
+  - [clickHyperlink](#clickhyperlink)
+  - [clickInputButton](#clickinputButton)
+  - [getPage](#getPage)
+  - [inputEnter](#inputenter)
+  - [scrollPage](#scrollpage)
+
+#####Base Methods
+
+####clickElement
+```python
+clickElement(driver, view, function, xPath, iFrame = None)
+```
+The `driver`, `view`, and `function` arguments are passed along to the screenshot call. The `iFrame` argument is used to switch focus to the frame given; works with either a name field or id field i.e. `<element id='value'>` or `<element name='value'`; defaults to None. The `xPath` argument is used to locate the correct element, then a click action is performed on that argument and a screenshot is taken.
+
+####enterElement
+```python
+enterElement(driver, view, function, element)
+```
+The `driver`, `view`, and `function` arguments are passed along to the screenshot call. The `element` argument is used to perform an enter key press on that element and then a screenshot is taken. The reason the whole element is taken instead of the xPath like the previous clickElement method is because often times data needs to be entered before the enter key is pressed, this allows for such data entry.
 
 ####getXPath
 ```python
@@ -302,24 +330,7 @@ screenshot(driver, view, function)
 - view: what view are you currently in i.e. HomePage, AboutMe, etc. (can be more abstract if you wish)
 - function: what function are you using to take a screenshot (make sure this has a descriptive name so it can be easily identifiable as to what role the screenshot has)
 
-####clickElement
-```python
-clickElement(driver, view, function, xPath, iFrame = None)
-```
-The `driver`, `view`, and `function` arguments are passed along to the screenshot call. The `iFrame` argument is used to switch focus to the frame given; works with either a name field or id field i.e. `<element id='value'>` or `<element name='value'`; defaults to None. The `xPath` argument is used to locate the correct element, then a click action is performed on that argument and a screenshot is taken.
-
-####enterElement
-```python
-enterElement(driver, view, function, element)
-```
-The `driver`, `view`, and `function` arguments are passed along to the screenshot call. The `element` argument is used to perform an enter key press on that element and then a screenshot is taken. The reason the whole element is taken instead of the xPath like the previous clickElement method is because often times data needs to be entered before the enter key is pressed, this allows for such data entry.
-
-####inputEnter
-```python
-inputEnter(driver, view, function, inputText, iFrame = None, **kwargs)
-```
-This method makes calls to enterElement and getXPath, and `driver`, `view`, `function` and `kwargs` get passed in respectively. The `inputText` argument is used for the content that should be entered into the text box before enterElement has been called. The `iFrame` argument is used to switch focus to the frame given; works with either a name or id field i.e. `<input name='value'>` or `<input id='value'>`; defaults to None.
-> This method makes use of the HTML tag `<input type="text" >inputText</input>`.
+#####Methods
 
 ####clickButton
 ```python
@@ -328,13 +339,6 @@ clickButton(driver, view, function, iFrame = None, **kwargs)
 This method makes calls to clickElement and getXPath, arguments are passed along respectively.
 > This method makes use of the HTML5 tag `<button></button>`.
 
-####clickInputButton
-```python
-clickInputButton(driver, view, function, iFrame = None, **kwargs)
-```
-This method makes calls to clickElement and getXPath, arguments are passed along respectively.
-> This method makes use of the HTML tag `<input type="submit" ></input>`.
-
 ####clickHyperlink
 ```python
 clickHyperlink(driver, view, function, iFrame = None, **kwargs)
@@ -342,11 +346,25 @@ clickHyperlink(driver, view, function, iFrame = None, **kwargs)
 This method makes calls to clickElement and getXPath, arguments are passed along respectively.
 > This method makes use of the HTML tag `<a href="url"></a>`.
 
+####clickInputButton
+```python
+clickInputButton(driver, view, function, iFrame = None, **kwargs)
+```
+This method makes calls to clickElement and getXPath, arguments are passed along respectively.
+> This method makes use of the HTML tag `<input type="submit" ></input>`.
+
 ####getPage
 ```python
 getPage(driver, view, function, page, splash = False, ignoreSplash = True)
 ```
 This method makes a call to screenshot and the arguments `driver`, `view`, and `function` are passed to it. The argument `page` is the url of the page you would like to visit, this must be in the format `http://pagetovisit.com` or `http://www.pagetovisit.com` where `https` is also valid or any other TLD i.e. `.net`, `.org`, etc. The argument `splash` is a boolean referencing if the page contains a splash page. The argument `ignoreSplash` is a boolean referencing whether to take a picture of the splash page as well or to just ignore it. By default there is no splash page and the splash page will be ignored. This method will route to a page and then take a screenshot.
+
+####inputEnter
+```python
+inputEnter(driver, view, function, inputText, iFrame = None, **kwargs)
+```
+This method makes calls to enterElement and getXPath, and `driver`, `view`, `function` and `kwargs` get passed in respectively. The `inputText` argument is used for the content that should be entered into the text box before enterElement has been called. The `iFrame` argument is used to switch focus to the frame given; works with either a name or id field i.e. `<input name='value'>` or `<input id='value'>`; defaults to None.
+> This method makes use of the HTML tag `<input type="text" >inputText</input>`.
 
 ####scrollPage
 ```python
@@ -360,7 +378,7 @@ This method makes a call to screenshot and the arguments `driver`, `view`, and `
 
 ###TO-DO
 - [ ] Update Readme
-- [ ] Reorganize Readme
+- [x] Reorganize Readme
 - [ ] Update wording/structure of [Differ](#differ)
 - [x] Rename Screenshot to Differ
 
