@@ -3,7 +3,7 @@ from PIL import ImageChops
 import datetime
 
 
-class Screenshot:
+class Differ:
 
     img1 = None
     img2 = None

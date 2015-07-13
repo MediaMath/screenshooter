@@ -17,17 +17,6 @@ Documentation - Elan Moyal - MediaMath Manhattan
 - [History](#history)
 - [License](#license)
 
-<!-- ###Table of Contents
-- Dependencies
-- General rules
-- Running Tests
-- Equality
-- Locating Images to Perform Diffs
-- Diff
-- Change
-- Capsule
-- TO-DO -->
-
 ##Description
 
 Screenshooter allows one to obtain a difference between a current UI layout and a previous UI layout via screenshots.
@@ -35,6 +24,69 @@ Screenshooter allows one to obtain a difference between a current UI layout and 
 Screenshooter contains a wrapper on Selenium Webdriver that will help automate the testing of various situations while taking a screenshot of various portions of the UI. Once screenshooter has obtained all the screenshots from the tests a method may be called to compare them against previous versions of that same UI. If there is a difference the updated image is saved along with the difference / change. The previous versions are stored via some other system i.e. on the local filesystem, or something like Amazon S3.
 
 ##Setup
+
+######Virtual Environment
+To simplify a few things a virtual environment was used while developing this package. This was done using virtualenv and virtualenvwrapper. To set up the virtual environment first install virtualenv and then virtualenvwrapper.
+
+```python
+pip install virtualenv
+pip install virtualenvwrapper
+```
+
+Then to set up the virtual environment via virtualenvwrapper the following must be done:
+```
+$ export WORKON_HOME=~/Envs #this creates a directory to store all the virtual environments
+$ source /usr/local/bin/virtualenvwrapper.sh #lets terminal know you want to start using virtualenvwrapper commands
+
+#to create a virtual environment
+$ mkvirtualenv venvName
+
+#to use virtual environment
+$ workon envName
+
+#Additional useful commands
+
+#to stop using virtual environment
+$ deactivate
+
+#to remove virtual environment
+$ rmvirtualenv envName
+```
+
+Once a virtual environment has been created only 2 commands need to be called to get up and Running
+```
+$ source /usr/local/bin/virtualenvwrapper.sh
+$ workon envName
+```
+
+Then `$ cd` into the directory where your project is located and that's it!
+For more info about [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/index.html)
+
+######Environment Variables
+Info acquired from this [blog](http://irisbeta.com/article/30408704/environment-variables-and-virtualenv/)
+
+To set up environment variables that exist only in specific virtual environments the following can be done.
+1. Activate the virtual envirionment you would like to use.
+    ```
+    $ workon envName
+    ```
+2. Edit the postactivate script
+    ```
+    $ nano $VIRTUAL_ENV/bin/postactivate
+    ```
+3. Set envirionment variables (there shouldn't be a space before or after the = sign)
+    ```
+    export USERNAME="OptimusPrime"
+    ```
+4. Exit via `CONTROL + x` and accept all
+
+To test
+```
+$ deactivate
+$ workon envName
+$ echo $USERNAME
+OptimusPrime
+```
 
 ###Dependencies
 Screenshooter is written in python v 3.4.
@@ -78,7 +130,7 @@ This will open up the diff image and the change image for you to see.
 
 ##Usage
 
-Screenshooter is made of three seperate modules, capsule, differ, and saves. Capsule is the wrapper for selenium webdriver that takes screenshots and uses them to implement differ. Differ takes the images and creates the image differences of them. Saves grabs all the existing images from some external or local source and packages them into a single multi-dimensional dictionary that can be used by Differ.
+Screenshooter is made of three seperate modules: capsule, differ, and saves. Capsule is the wrapper for selenium webdriver that takes screenshots and uses them to implement differ. Differ takes the images and creates the image differences of them. Saves grabs all the existing images from some external or local source and packages them into a single multi-dimensional dictionary that can be used by Differ.
 
 All interaction with screenshooter can be done through capsule (if the defaults on differ are acceptable; future versions will allow altering of differ via the config file).
 
@@ -112,10 +164,38 @@ class SomeTestingFramework():
 
 Capsule should be instantiated at the top most scope of the testing framework, this guarantees that the screenshots being taken maintain existence until needed. The generateDiffs method should be called at the very end of all the tests, this is to minimize calls to external services; such as Amazon S3.
 
+The generateDiffs method calls the Differ run function which implements only default options. Differ's main purpose is to either generate a diff image or a change image or both.
+
+######Differ Example:
+Given 2 images
+
+screenshot1
+![screenshot of original image](./tests/imgs/screenshot1.png?raw=true "Original Image")
+
+and screenshot2
+![screenshot of modified image](./tests/imgs/screenshot3.png?raw=true "Modified Image")
+
+Notice the only difference between the two images is the blue bar on the top.
+
+This is what happens when the diff method is called:
+![Image of Diff outcome](./tests/imgs/Diff.png?raw=true "Diff Image")
+
+And this is what happens when the change method is called:
+![Image of Change outcome](./tests/imgs/Change.png?raw=true "Change Image")
+
+The diff method will show the difference between both images, while the change method will only show what has been changed from the first image to the second image. Notice that the change method does not highlight the blue bar since it no longer exists in that image, but the shift upward of everything else is highlighted. Deletions in the change method are not highlighted but are in the diff method, please be aware of this when choosing accordingly.
+
+**NOTE:** A change of an object's position counts as a deletion since those pixels are no longer in that spot, but instead in a different spot (addition)
+
 ##FAQ
 Q: What do you mean by multi-dimensional dictionary?
 
 A: See [general rules of thumb](general-rules) for an example. The purpose is so that the images may be accessed in O(1) time in a similar format to directories.
+
+Q: What is the difference between Diff and Change?
+
+A: See [example](#differ-example)
+<!-- Explain difference using graphics step by step -->
 
 ##Reference
 
@@ -282,10 +362,11 @@ This method makes a call to screenshot and the arguments `driver`, `view`, and `
 - [ ] Update Readme
 - [ ] Reorganize Readme
 - [ ] Update wording/structure of [Differ](#differ)
-- [ ] Rename Screenshot to Differ
+- [x] Rename Screenshot to Differ
 
 ####Things that should be added to Readme
-- [ ] How to set and unset environment variables for virtual environments
+- [x] How to setup virtual environment
+- [x] How to set and unset environment variables for virtual environments
 - [x] How Capsule and its various functions work / should be called
 
 ####For Next Version

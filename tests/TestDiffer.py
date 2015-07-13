@@ -2,11 +2,11 @@ import screenshooter.config as config
 import pytest
 import datetime
 from PIL import Image
-from screenshooter.Screenshot import Screenshot
+from screenshooter.Differ import Differ
 import time
 
 
-class TestScreenshot:
+class TestDiffer:
 
     nonExistentScreenLoc = "blah"
 
@@ -21,7 +21,7 @@ class TestScreenshot:
         cls.img3 = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
 
     def setup_method(self, method):
-        self.screenshotProcess = Screenshot()
+        self.screenshotProcess = Differ()
         self.firstScreenshot = {'View': 'SomeView', 'Date': datetime.datetime.now().date().isoformat(), 'Function': 'screenshot1.png'}
         self.secondScreenshot = {'View': 'SomeView', 'Date': datetime.datetime.now().date().isoformat(), 'Function': 'screenshot2.png'}
         self.thirdScreenshot = {'View': 'SomeView', 'Date': datetime.datetime.now().date().isoformat(), 'Function': 'screenshot3.png'}
@@ -103,7 +103,7 @@ class TestScreenshot:
         self.screenshotProcess.img1 = self.first
         self.screenshotProcess.img2 = self.third
         diff = self.screenshotProcess.getDiff()
-        #diff.show()
+        diff.show()
         assert diff is not None
 
     def testGetChangeVoidParameters(self):
@@ -128,7 +128,7 @@ class TestScreenshot:
         self.screenshotProcess.img1 = self.first
         self.screenshotProcess.img2 = self.third
         change = self.screenshotProcess.getChange()
-        #change.show()
+        change.show()
         assert change is not None
 
     def testGetChangeWithSameScreenshots(self):
