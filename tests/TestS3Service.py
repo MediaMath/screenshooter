@@ -58,11 +58,11 @@ class TestS3Service():
 
     def testCollectImagesFromS3(self, monkeypatch):
         monkeypatch.setattr(self.s3, 'boto', boto())
-        assert self.s3.collectS3Images() is not None
+        assert self.s3.collectImages() is not None
 
     def testSaveImagesToS3(self, monkeypatch, assignImages):
         monkeypatch.setattr(self.s3, 'boto', boto())
-        result = self.s3.saveS3(self.imgs)
+        result = self.s3.save(self.imgs)
         assert result['count'] == len(result['responses'])
 
 

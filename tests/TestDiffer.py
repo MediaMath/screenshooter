@@ -105,7 +105,7 @@ class TestDiffer:
         self.screenshotProcess.img1 = self.first
         self.screenshotProcess.img2 = self.third
         diff = self.screenshotProcess.getDiff()
-        diff.show()
+        # diff.show()
         assert diff is not None
 
     def testGetChangeVoidParameters(self):
@@ -130,7 +130,7 @@ class TestDiffer:
         self.screenshotProcess.img1 = self.first
         self.screenshotProcess.img2 = self.third
         change = self.screenshotProcess.getChange()
-        change.show()
+        # change.show()
         assert change is not None
 
     def testGetChangeWithSameScreenshots(self):

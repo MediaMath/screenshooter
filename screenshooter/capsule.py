@@ -1,4 +1,4 @@
-from screenshooter.Screenshot import Screenshot
+from screenshooter.Differ import Differ
 from selenium.webdriver.common.keys import Keys
 from PIL import Image
 from datetime import datetime
@@ -8,7 +8,7 @@ import time
 
 class Capsule():
     def __init__(self):
-        self.differ = Screenshot()
+        self.differ = Differ()
         self.imgs = self.differ.imgs
 
     def getXPath(self, **kwargs):
@@ -107,7 +107,8 @@ class Capsule():
             from screenshooter.saves import s3Service
             service = s3Service()
         elif serviceName.upper() == "FILESYSTEM":
-            pass
+            from screenshooter.saves import fsService
+            service = fsService()
 
         service.collectImages(self.differ.imgs)
         self.differ.run()
