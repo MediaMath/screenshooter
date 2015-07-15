@@ -308,7 +308,7 @@ Contents:
   - [clickElement](#clickelement)
   - [enterElement](#enterelement)
   - [getXPath](#getxpath)
-  - [screenshot][#screenshot]
+  - [screenshot](#screenshot)
 - [Methods](#methods)
   - [clickButton](#clickbutton)
   - [clickHyperlink](#clickhyperlink)
@@ -467,8 +467,8 @@ This method will scroll the length of the viewable page (what you see on your sc
 - [x] Reorganize Readme
 - [x] Update wording/structure of [Differ](#differ)
 - [x] Rename Screenshot to Differ
-- [ ] Add and configure setup.py
-- [ ] Get everything ready for pip
+- [x] Add and configure setup.py
+- [ ] Add in missing info (Installation, setup.py url, etc.) once open source is greenlighted
 
 ####Things that should be added to Readme
 - [x] How to setup virtual environment
@@ -477,6 +477,8 @@ This method will scroll the length of the viewable page (what you see on your sc
 
 ####For Next Version
 - [ ] Allow modifications of Differ via config instead of parameters
+- [ ] How to deal with Today changes in UI
+- [ ] Speed Improvements
 
 ##License
 <!-- Probably doing an MIT License -->

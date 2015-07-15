@@ -75,6 +75,8 @@ class Differ:
         #find the oldest date stored and check if it has function, if so return location
         try:
             for dateDir in sorted(self.imgs[loc['View']], reverse = True):
+                if dateDir == datetime.datetime.now().date().isoformat():
+                    continue
                 loc['Date'] = dateDir
                 imgReference = self.getImg(loc)
                 if imgReference is not None:
