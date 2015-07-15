@@ -39,11 +39,11 @@ class Differ:
         try:
             if view not in self.imgs:
                 self.imgs[view] = dict()
-            if date not in self.imgs[view]:
+            if today not in self.imgs[view]:
                 self.imgs[view][today] = dict()
             self.imgs[view][today]["new" + function] = self.imgs['tmp'][view][date][function]
         except KeyError:
-            del self.imgs[view][today][function]
+            del self.imgs[view][today]["new" + function]
             return False
 
         if diffImg is not None or changeImg is not None:

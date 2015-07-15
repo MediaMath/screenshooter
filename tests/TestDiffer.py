@@ -1,6 +1,7 @@
 import screenshooter.config as config
 import pytest
 import datetime
+from datetime import timedelta
 from PIL import Image
 from screenshooter.Differ import Differ
 import time
@@ -21,10 +22,11 @@ class TestDiffer:
         cls.img3 = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
 
     def setup_method(self, method):
+        yesterday = datetime.datetime.now() - timedelta(days = 1)
         self.screenshotProcess = Differ()
-        self.firstScreenshot = {'View': 'SomeView', 'Date': datetime.datetime.now().date().isoformat(), 'Function': 'screenshot1.png'}
-        self.secondScreenshot = {'View': 'SomeView', 'Date': datetime.datetime.now().date().isoformat(), 'Function': 'screenshot2.png'}
-        self.thirdScreenshot = {'View': 'SomeView', 'Date': datetime.datetime.now().date().isoformat(), 'Function': 'screenshot3.png'}
+        self.firstScreenshot = {'View': 'SomeView', 'Date': yesterday.date().isoformat(), 'Function': 'screenshot1.png'}
+        self.secondScreenshot = {'View': 'SomeView', 'Date': yesterday.date().isoformat(), 'Function': 'screenshot2.png'}
+        self.thirdScreenshot = {'View': 'SomeView', 'Date': yesterday.date().isoformat(), 'Function': 'screenshot3.png'}
 
         self.first = self.tmpImg1
         self.second = self.tmpImg2
@@ -83,16 +85,16 @@ class TestDiffer:
             self.screenshotProcess.getDiff()
 
     def testGetDiffInvalidFirstLocation(self):
-        assert self.screenshotProcess.getDiff(firstLoc = self.nonExistentScreenLoc,
-                                              secondLoc = self.firstScreenshot) is None
+        assert self.screenshotProcess.getDiff(originalLoc = self.nonExistentScreenLoc,
+                                              modifiedLoc = self.firstScreenshot) is None
 
     def testGetDiffInvalidSecondLocation(self):
-        assert self.screenshotProcess.getDiff(firstLoc = self.firstScreenshot,
-                                              secondLoc = self.nonExistentScreenLoc) is None
+        assert self.screenshotProcess.getDiff(originalLoc = self.firstScreenshot,
+                                              modifiedLoc = self.nonExistentScreenLoc) is None
 
     def testGetDiffReturnsValueWithLocation(self):
-        assert self.screenshotProcess.getDiff(firstLoc = self.firstScreenshot,
-                                              secondLoc = self.thirdScreenshot) is not None
+        assert self.screenshotProcess.getDiff(originalLoc = self.firstScreenshot,
+                                              modifiedLoc = self.thirdScreenshot) is not None
 
     def testGetDiffWithSameScreenshots(self):
         self.screenshotProcess.img1 = self.first
@@ -146,7 +148,7 @@ class TestDiffer:
     def testRun(self):
         self.screenshotProcess.run()
         view = self.thirdScreenshot['View']
-        date = self.thirdScreenshot['Date']
+        date = datetime.datetime.now().date().isoformat()
         diff = self.screenshotProcess.imgs[view][date]['newscreenshot3Diff.png']
         change = self.screenshotProcess.imgs[view][date]['newscreenshot3Change.png']
         assert diff is not None and change is not None
