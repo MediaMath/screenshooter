@@ -96,21 +96,21 @@ class Differ:
         except KeyError:
             return None
 
-    # If firstLoc and secondLoc are not provided it will use the last images opened
-    # using the equals method, firstLoc must be the original image and secondLoc
+    # If originalLoc and modifiedLoc are not provided it will use the last images opened
+    # using the equals method, originalLoc must be the original image and modifiedLoc
     # must be the modified image
     def getDiff(self, color = (0, 150, 255), highlightDiff = True,
-                firstLoc = None, secondLoc = None):
+                originalLoc = None, modifiedLoc = None):
         firstImg = None
         secondImg = None
 
-        if (firstLoc is None and secondLoc is None) and (self.img1 is None or self.img2 is None):
+        if (originalLoc is None and modifiedLoc is None) and (self.img1 is None or self.img2 is None):
             raise UnboundLocalError("The stored images are null and the parameters" +
                                     " do not provide locations to open them")
-        if firstLoc is not None and secondLoc is not None:
+        if originalLoc is not None and modifiedLoc is not None:
             try:
-                firstImg = self.getImg(firstLoc)
-                secondImg = self.getImg(secondLoc, True)
+                firstImg = self.getImg(originalLoc)
+                secondImg = self.getImg(modifiedLoc, True)
             except (IOError, KeyError, TypeError):
                 return None
         else:

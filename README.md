@@ -35,7 +35,7 @@ pip install virtualenvwrapper
 
 Then to set up the virtual environment via virtualenvwrapper the following must be done:
 ```
-$ export WORKON_HOME=~/Envs #this creates a directory to store all the virtual environments
+$ export WORKON_HOME=~/Envs #tells virtualenvwrapper where to place your virtual environments
 $ source /usr/local/bin/virtualenvwrapper.sh #lets terminal know you want to start using virtualenvwrapper commands
 
 #to create a virtual environment
@@ -128,9 +128,9 @@ py.test TestName.py
 ```
 pytest will pick up all the files beginning with Test and run them.
 
-For an example of how Screenshooter works uncomment `diff.show()` in the test function `testGetDiffReturnsValueWithoutLocation` and `dif.change()` in the test function `testGetChangeReturnsValueWithoutLocation` of TestScreenshot.py
+<!-- For an example of how Screenshooter works uncomment `diff.show()` in the test function `testGetDiffReturnsValueWithoutLocation` and `dif.change()` in the test function `testGetChangeReturnsValueWithoutLocation` of TestScreenshot.py
 
-This will open up the diff image and the change image for you to see.
+This will open up the diff image and the change image for you to see. -->
 
 ##Usage
 
@@ -239,7 +239,23 @@ Contents:
 - [Locating Images](#locating-images-to-perform-diffs)
 
 ####Change
-The getChange method operates the same way as the [getDiff](#diff) function. This method will only display the diff of the image that changed from the original thus it is crucial to make sure the original and modified images are correct or the correct result won't be returned and at best inverted.
+```python
+getChange(color = (0, 150, 255), highlightDiff = True, originalLoc = None, modifiedLoc = None)
+```
+Args:
+- color: determines the color of the highlighted portions of the change image
+  - Default: RGB(0, 150, 255)
+- highlightDiff: boolean that determines whether or not to apply a highlight to the change image
+  - Default: True
+  - **Note** if false the change image will show the change in more vibrant colors while the rest of the image is opaque
+- originalLoc: the location of the original image
+  - Default: None
+  - **Note** if `equals` has been called before this method then it will default to the original location provided there
+- modifiedLoc: the location of the modified image
+  - Default: None
+  - **Note** if `equals` has been called before this method then it will default to the modified location provided there
+
+This method will only display the diff of the image that changed from the original thus it is crucial to make sure the original and modified images are correct or the correct result won't be returned and at best inverted.
 
 If default parameters are fine but locations need to be adjusted implement the following call:
 ```python
@@ -249,26 +265,30 @@ getChange(originalLoc = original, modifiedLoc = modified)
 ```
 
 ####Diff
-The getDiff function accepts 4 optional parameters depending on use. The first parameter is the color in RGB format, and the second parameter is a boolean stating whether or not to use a color for the diff.
-
-**NOTE:** If this is False the color doesn't matter it won't bother changing it even if a color is specified. To speed up operation set to False as changing the color is slow.
-
 ```python
-getDiff(highlightDiff = False)
+getDiff(color = (0, 150, 255), highlightDiff = True, originalLoc = None, modifiedLoc = None)
 ```
+Args:
+- color: determines the color of the highlighted portions of the change image
+  - Default: RGB(0, 150, 255)
+- highlightDiff: boolean that determines whether or not to apply a highlight to the diff image
+  - Default: True
+  - **Note** if false the diff image will show the diff in more vibrant colors while the rest of the image is opaque
+- originalLoc: the location of the original image
+  - Default: None
+    - **Note** if `equals` has been called before this method then it will default to the original location provided there
+- modifiedLoc: the location of the modified image
+  - Default: None
+    - **Note** if `equals` has been called before this method then it will default to the modified location provided there
 
-The diff image obtained is taken from the diff of the images retrieved from the locations provided by the third and fourth parameters.
-
-**NOTE:** The third parameter must exclusively be the original image location and the fourth parameter the modified image location.
-
-By default the color is RGB(0, 150, 255) and will be implemented. The image locations are set to None so that the images used are the last images used when equality was checked.
+<!-- **NOTE:** If this is False the color doesn't matter it won't bother changing it even if a color is specified. To speed up operation set to False as changing the color is slow. -->
 
 If the default parameters for color are fine but the last images used by the equals function are not, implement the following call:
 
 ```python
 original = {'View': someView, 'Date': someDate, 'Function': someFunction}
 modified = {'View': someOtherView, 'Date': someOtherDate, 'Function': someOtherFunction}
-getDiff(firstLoc = original, secondLoc = modified)
+getDiff(originalLoc = original, modifiedLoc = modified)
 ```
 The only thing that must be different between the two values is function, otherwise it's the same image.
 
@@ -350,9 +370,12 @@ Args:
 - driver: the selenium driver used
 - view: what view are you currently in i.e. HomePage, AboutMe, etc. (can be more abstract if you wish)
 - function: what function are you using to take a screenshot (make sure this has a descriptive name so it can be easily identifiable as to what role the screenshot has)
+
 ---
+
 ###Methods
 ---
+
 ####clickButton
 ```python
 clickButton(driver, view, function, iFrame = None, **kwargs)
@@ -390,6 +413,8 @@ Args:
 
 > This method makes use of the HTML tag `<input type="submit" ></input>`.
 
+---
+
 ####getPage
 ```python
 getPage(driver, view, function, page, splash = False, ignoreSplash = True)
@@ -403,6 +428,8 @@ Args:
   - Default: True (ignore the splash page)
 
 This method will route to a page and then take a screenshot.
+
+---
 
 ####inputEnter
 ```python
@@ -418,21 +445,30 @@ Args:
 
 > This method makes use of the HTML tag `<input type="text" >inputText</input>`.
 
+---
+
 ####scrollPage
 ```python
 scrollPage(driver, view, function)
 ```
-This method makes a call to screenshot and the arguments `driver`, `view`, and `function` are passed to it. This method will scroll the length of the viewable page (what you see on your screen) and then take a screenshot, doing this repeatedly until the entire page has been scrolled. Use this in conjunction with `getPage` to route to a specific page and screenshot every part of it.
+Args:
+- `driver`, `view`, `function`: passed into `enterElement(driver, view, function)`
+
+This method will scroll the length of the viewable page (what you see on your screen) and then take a screenshot, doing this repeatedly until the entire page has been scrolled. Use this in conjunction with `getPage` to route to a specific page and screenshot every part of it.
+
+---
 
 ##Limitations
 
 ##History
 
 ###TO-DO
-- [ ] Update Readme
+- [x] Update Readme
 - [x] Reorganize Readme
-- [ ] Update wording/structure of [Differ](#differ)
+- [x] Update wording/structure of [Differ](#differ)
 - [x] Rename Screenshot to Differ
+- [ ] Add and configure setup.py
+- [ ] Get everything ready for pip
 
 ####Things that should be added to Readme
 - [x] How to setup virtual environment
