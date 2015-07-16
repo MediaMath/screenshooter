@@ -342,7 +342,7 @@ Args:
 - `driver`, `view`, `function`: passed into `screenshot(driver, view, function)`
 - `element`: used to perform an enter key press on that element and then a screenshot is taken
 
-The reason the whole element is taken instead of the xPath like the previous clickElement method is because often times data needs to be entered before the enter key is pressed, this allows for such data entry.
+This method will press the enter key on the given element. The reason the whole element is taken instead of the xPath is because often times data needs to be entered before the enter key is pressed, this allows for such data entry.
 
 ---
 
@@ -350,8 +350,6 @@ The reason the whole element is taken instead of the xPath like the previous cli
 ```python
 getXPath(**kwargs)
 ```
-This method returns only the first element found based on the arguments given.
-
 Acceptable Key Word Arguments:
 - `tag = 'someHTMLTag'` i.e. `<button></button>`, `<a></a>`, `<input>` etc.
 - `classTag = 'cssClass'` i.e. `<button class="someClass"></button>`
@@ -359,6 +357,8 @@ Acceptable Key Word Arguments:
 - `value = 'inputValue'` i.e. `<input value="Hello">`
 - `text = 'textContent'` i.e. `<input type="text" value="textContent">`
 - `name = 'elementName'` i.e. `<button name="someName"></button>`
+
+This method returns the XPath of the first element found based on the arguments given.
 
 ---
 
@@ -370,6 +370,8 @@ Args:
 - driver: the selenium driver used
 - view: what view are you currently in i.e. HomePage, AboutMe, etc. (can be more abstract if you wish)
 - function: what function are you using to take a screenshot (make sure this has a descriptive name so it can be easily identifiable as to what role the screenshot has)
+
+This method takes a screenshot of the current screen. The size of the screenshot is based on the size of the browser, it is recommended to create a default size that the browser gets formed to.
 
 ---
 
@@ -387,6 +389,8 @@ Args:
 
 > This method makes use of the HTML5 tag `<button></button>`.
 
+This method will click a button then take a screenshot.
+
 ---
 
 ####clickHyperlink
@@ -400,6 +404,8 @@ Args:
 
 > This method makes use of the HTML tag `<a href="url"></a>`.
 
+This method will click a hyperlink then take a screenshot.
+
 ---
 
 ####clickInputButton
@@ -412,6 +418,8 @@ Args:
   - return value: passed into `clickElement(driver, view, function, iFrame, value)`
 
 > This method makes use of the HTML tag `<input type="submit" ></input>`.
+
+This method will click an input of type submit and then take a screenshot.
 
 ---
 
@@ -445,6 +453,8 @@ Args:
 
 > This method makes use of the HTML tag `<input type="text" >inputText</input>`.
 
+This method will apply the text given to an input textbox, press the enter key and then take a screenshot.
+
 ---
 
 ####scrollPage
@@ -459,6 +469,26 @@ This method will scroll the length of the viewable page (what you see on your sc
 ---
 
 ##Limitations
+#####Equality
+Checking for equality has a few limitations, all related to only being able to check for exact equality:
+1. Images must be of the same [mode type](#http://pillow.readthedocs.org/en/latest/reference/Image.html#PIL.Image.mode)
+2. Images must be of the same size (i.e. 1280 X 720p)
+3. Images must be of the same file type (i.e. .png)
+
+> Q: What do you mean by exact equality?
+
+Equality is checked by subtracting pixels. Thus, if two pixels are exactly equal they will have the same pixel and the result will be a tuple of 0's.
+
+> Q: Why should I care that only exact equality is implemented?
+
+I'll give an example:
+Say you have two images, which to the human eye appear identical. Let's say that image1 contains all pixels of value RGB(128, 128, 128) and image2 contains all pixels of value RGB(129, 128, 128). These should appear identical however when run through this system the two images would not be equivalent. Maybe this level of exactness is needed, maybe not, but please be aware that it exists.
+
+#####Methods
+Majority of the selenium wrapper methods rely on the idea that after clicking, or key pressing enter, it will cause a route change. Once the route has been changed, or a pop up is shown, a screenshot will be taken. If clicking on a certain element, or hitting enter, does not change the route please do not use one of the wrapper methods. If you do use a wrapper method on a non route changing element a screenshot will still be taken and duplicate images will exist in storage with different names. These would have to be manually deleted if they are unwanted.
+
+#####Testing
+Just to note, all tests have been done using OSX and have not be tested on any other Unix-like system or Windows. The saves module (specificly fsService) may also need some reworking in order to be functional on another Unix-like system or Windows.
 
 ##History
 
@@ -482,3 +512,5 @@ This method will scroll the length of the viewable page (what you see on your sc
 
 ##License
 <!-- Probably doing an MIT License -->
+Copyright (c) MediaMath, Inc. 2015
+This is licensed under the [MIT License](http://opensource.org/licenses/MIT)
