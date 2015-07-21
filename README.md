@@ -128,10 +128,6 @@ py.test TestName.py
 ```
 pytest will pick up all the files beginning with Test and run them.
 
-<!-- For an example of how Screenshooter works uncomment `diff.show()` in the test function `testGetDiffReturnsValueWithoutLocation` and `dif.change()` in the test function `testGetChangeReturnsValueWithoutLocation` of TestScreenshot.py
-
-This will open up the diff image and the change image for you to see. -->
-
 ##Usage
 
 Screenshooter is made of three seperate modules: capsule, differ, and saves. Capsule is the wrapper for selenium webdriver that takes screenshots and uses them to implement differ. Differ takes the images and creates the image differences of them. Saves grabs all the existing images from some external or local source and packages them into a single multi-dimensional dictionary that can be used by Differ.
@@ -194,7 +190,7 @@ The diff method will show the difference between both images, while the change m
 ##FAQ
 Q: What do you mean by multi-dimensional dictionary?
 
-A: See [general rules of thumb](general-rules) for an example. The purpose is so that the images may be accessed in O(1) time in a similar format to directories.
+A: See [general rules of thumb](#general-rules) for an example. The purpose is so that the images may be accessed in O(1) time in a similar format to directories.
 
 Q: What is the difference between Diff and Change?
 
@@ -218,6 +214,7 @@ imgs = dict(imgsView)
 - View refers to some string value ending in View i.e. `'SomeView'`
 - Date refers to some string value with the format YYYY-MM-DD i.e. `'2015-06-19'`
 - Function refers to some string value representing the name of the image i.e. `'blah.png'`
+  - **NOTE**: The name of this image is meant to be the name of the function that called for a screenshot, this allows ease of use when identifying what took the screenshot and what it is of. Hence, it is referred to as function.
 - The value stored at the end of the dictionary is an image of type PIL.Image
 - All mentions of location refer to location within the multi-dimensional dictionary
 - When passing around any location from function to function it is done in the following format
@@ -255,7 +252,7 @@ Args:
   - Default: None
   - **Note** if `equals` has been called before this method then it will default to the modified location provided there
 
-This method will only display the diff of the image that changed from the original thus it is crucial to make sure the original and modified images are correct or the correct result won't be returned and at best inverted.
+This method will only display the diff of the image that changed from the original thus it is crucial to make sure the original and modified images are exactly that or the correct result won't be returned and at best inverted.
 
 If default parameters are fine but locations need to be adjusted implement the following call:
 ```python
@@ -281,8 +278,6 @@ Args:
   - Default: None
     - **Note** if `equals` has been called before this method then it will default to the modified location provided there
 
-<!-- **NOTE:** If this is False the color doesn't matter it won't bother changing it even if a color is specified. To speed up operation set to False as changing the color is slow. -->
-
 If the default parameters for color are fine but the last images used by the equals function are not, implement the following call:
 
 ```python
@@ -296,7 +291,7 @@ The only thing that must be different between the two values is function, otherw
 
 ####Equality
 
-Checks for an exact match of images. Currently is unable to compute if the image modes are different. Invalid equality will be captured if the image sizes are not exactly the same as well as having the same file type (ie. .png, .jpg, etc.).
+Checks for an exact match of images. Currently is unable to compute if the image modes are different. Invalid equality will be captured if the image sizes are not exactly the same as well as not having the same file type (ie. .png, .jpg, etc.).
 
 ####Locating Images to Perform Diffs
 
