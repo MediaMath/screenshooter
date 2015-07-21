@@ -195,7 +195,6 @@ A: See [general rules of thumb](#general-rules) for an example. The purpose is s
 Q: What is the difference between Diff and Change?
 
 A: See [example](#differ-example)
-<!-- Explain difference using graphics step by step -->
 
 ##Reference
 
@@ -466,6 +465,7 @@ This method will scroll the length of the viewable page (what you see on your sc
 ##Limitations
 #####Equality
 Checking for equality has a few limitations, all related to only being able to check for exact equality:
+
 1. Images must be of the same [mode type](#http://pillow.readthedocs.org/en/latest/reference/Image.html#PIL.Image.mode)
 2. Images must be of the same size (i.e. 1280 X 720p)
 3. Images must be of the same file type (i.e. .png)
@@ -506,6 +506,6 @@ Just to note, all tests have been done using OSX and have not be tested on any o
 - [ ] Speed Improvements
 
 ##License
-<!-- Probably doing an MIT License -->
 Copyright (c) MediaMath, Inc. 2015
+
 This is licensed under the [MIT License](http://opensource.org/licenses/MIT)

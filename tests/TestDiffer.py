@@ -72,15 +72,15 @@ class TestDiffer:
     def testScreenshotComparisonNotEqual(self):
         assert self.screenshotProcess.equals(self.first, self.third) == False
 
-    @skip
+    # @skip
     def testScreenshotStore(self):
         assert self.screenshotProcess.store(self.firstScreenshot) == True
 
-    @skip
+    # @skip
     def testScreenshotVoidParametersStore(self):
         assert self.screenshotProcess.store() == False
 
-    @skip
+    # @skip
     def testScreenshotInvalidParametersStore(self):
         with pytest.raises(TypeError):
             self.screenshotProcess.store(self.nonExistentScreenLoc)

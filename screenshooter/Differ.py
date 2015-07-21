@@ -4,14 +4,10 @@ import datetime
 
 
 class Differ:
-
-    img1 = None
-    img2 = None
-
-    imgs = dict()
-
     def __init__(self):
-        pass
+        self.img1 = None
+        self.img2 = None
+        self.imgs = dict()
 
     # Identifies exact equality, can't differentiate between the following:
     # image size, image file type, image mode (ie. RGB/L/P/CMYK)
@@ -26,47 +22,60 @@ class Differ:
         else:
             return True
 
-    def store(self, imgLoc = None, diffImg = None, changeImg = None):
-
-        if imgLoc is None and diffImg is None and changeImg is None:
+    def storeScreenshot(self, imgLoc):
+        if imgLoc is None:
             return False
 
         view = imgLoc['View']
         date = imgLoc['Date']
         function = imgLoc['Function']
-        today = datetime.datetime.now().date().isoformat()
 
         try:
             if view not in self.imgs:
                 self.imgs[view] = dict()
-            if today not in self.imgs[view]:
-                self.imgs[view][today] = dict()
-            self.imgs[view][today]["new" + function] = self.imgs['tmp'][view][date][function]
+            if date not in self.imgs[view]:
+                self.imgs[view][date] = dict()
+            self.imgs[view][date]["new" + function] = self.imgs['tmp'][view][date][function]
         except KeyError:
-            del self.imgs[view][today]["new" + function]
+            del self.imgs[view][date]["new" + function]
+            return False
+        return True
+
+    def storeDiff(self, imgLoc, diffImg):
+        if diffImg is None:
             return False
 
-        if diffImg is not None or changeImg is not None:
-            try:
-                imgName = function.partition('.')
-                if diffImg is not None:
-                    diffName = "new" + imgName[0] + "Diff.png"
-                    self.imgs[view][today][diffName] = diffImg
-                if changeImg is not None:
-                    changeName = "new" + imgName[0] + "Change.png"
-                    self.imgs[view][today][changeName] = changeImg
-            except KeyError:
-                #Not sure if still executes under single try if only one fails
-                try:
-                    del self.imgs[view][today][diffName]
-                except KeyError:
-                    pass
-                try:
-                    del self.imgs[view][today][changeName]
-                except KeyError:
-                    pass
-                del self.imgs[view][today][function]
-                return False
+        view = imgLoc['View']
+        date = imgLoc['Date']
+        imgName = imgLoc['Function'].partition('.')
+
+        diffName = "new" + imgName[0] + "Diff.png"
+        self.imgs[view][date][diffName] = diffImg
+        return True
+
+    def storeChange(self, imgLoc, changeImg):
+        if changeImg is None:
+            return False
+
+        view = imgLoc['View']
+        date = imgLoc['Date']
+        imgName = imgLoc['Function'].partition('.')
+
+        changeName = "new" + imgName[0] + "Change.png"
+        self.imgs[view][date][changeName] = changeImg
+
+        return True
+
+    def store(self, imgLoc = None, diffImg = None, changeImg = None):
+
+        if imgLoc is None and diffImg is None and changeImg is None:
+            return False
+
+        if self.storeScreenshot(imgLoc):
+            self.storeDiff(imgLoc, diffImg)
+            self.storeChange(imgLoc, changeImg)
+        else:
+            return False
 
         return True
 
