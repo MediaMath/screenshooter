@@ -82,9 +82,10 @@ class Differ:
     #pass in the location of the modified img, returns location of original image
     def locateImgForDiff(self, loc):
         #find the oldest date stored and check if it has function, if so return location
+        today = datetime.datetime.now().date().isoformat()
         try:
             for dateDir in sorted(self.imgs[loc['View']], reverse = True):
-                if dateDir == datetime.datetime.now().date().isoformat():
+                if dateDir == today:
                     continue
                 loc['Date'] = dateDir
                 imgReference = self.getImg(loc)
@@ -107,26 +108,27 @@ class Differ:
         except KeyError:
             return None
 
-    # If originalLoc and modifiedLoc are not provided it will use the last images opened
-    # using the equals method, originalLoc must be the original image and modifiedLoc
-    # must be the modified image
-    def getDiff(self, color = (0, 150, 255), highlightDiff = True,
-                originalLoc = None, modifiedLoc = None):
-        firstImg = None
-        secondImg = None
-
+    def sanitizeForDiff(self, originalLoc, modifiedLoc):
         if (originalLoc is None and modifiedLoc is None) and (self.img1 is None or self.img2 is None):
             raise UnboundLocalError("The stored images are null and the parameters" +
                                     " do not provide locations to open them")
         if originalLoc is not None and modifiedLoc is not None:
             try:
-                firstImg = self.getImg(originalLoc)
-                secondImg = self.getImg(modifiedLoc, True)
+                return self.getImg(originalLoc), self.getImg(modifiedLoc, True)
             except (IOError, KeyError, TypeError):
-                return None
+                return None, None
         else:
-            firstImg = self.img1
-            secondImg = self.img2
+            return self.img1, self.img2
+
+    # If originalLoc and modifiedLoc are not provided it will use the last images opened
+    # using the equals method. OriginalLoc must be the original image and modifiedLoc
+    # must be the modified image
+    def getDiff(self, color = (0, 150, 255), highlightDiff = True,
+                originalLoc = None, modifiedLoc = None):
+
+        firstImg, secondImg = self.sanitizeForDiff(originalLoc, modifiedLoc)
+        if firstImg is None or secondImg is None:
+            return None
 
         dif = ImageChops.difference(firstImg, secondImg)
 
@@ -147,22 +149,10 @@ class Differ:
 
     def getChange(self, color = (0, 150, 255), highlightDiff = True,
                   originalLoc = None, modifiedLoc = None):
-        originalImg = None
-        modifiedImg = None
 
-        if (originalLoc is None and modifiedLoc is None) and (self.img1 is None or self.img2 is None):
-            raise UnboundLocalError("The stored images are null and the parameters" +
-                                    " do not provide locations to open them")
-
-        if originalLoc is not None and modifiedLoc is not None:
-            try:
-                originalImg = self.getImg(originalLoc)
-                modifiedImg = self.getImg(modifiedLoc, True)
-            except (IOError, KeyError, TypeError):
-                return None
-        else:
-            originalImg = self.img1
-            modifiedImg = self.img2
+        originalImg, modifiedImg = self.sanitizeForDiff(originalLoc, modifiedLoc)
+        if originalImg is None or modifiedImg is None:
+            return None
 
         diff = ImageChops.difference(originalImg, modifiedImg)
         if diff.getbbox() is None:
