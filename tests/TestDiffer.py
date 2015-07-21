@@ -85,35 +85,35 @@ class TestDiffer:
         with pytest.raises(TypeError):
             self.screenshotProcess.store(self.nonExistentScreenLoc)
 
-    # @skip
+    @skip
     def testGetDiffVoidParameters(self):
         self.screenshotProcess.img1 = None
         self.screenshotProcess.img2 = None
         with pytest.raises(UnboundLocalError):
             self.screenshotProcess.getDiff()
 
-    # @skip
+    @skip
     def testGetDiffInvalidFirstLocation(self):
         assert self.screenshotProcess.getDiff(originalLoc = self.nonExistentScreenLoc,
                                               modifiedLoc = self.firstScreenshot) is None
 
-    # @skip
+    @skip
     def testGetDiffInvalidSecondLocation(self):
         assert self.screenshotProcess.getDiff(originalLoc = self.firstScreenshot,
                                               modifiedLoc = self.nonExistentScreenLoc) is None
 
-    # @skip
+    @skip
     def testGetDiffReturnsValueWithLocation(self):
         assert self.screenshotProcess.getDiff(originalLoc = self.firstScreenshot,
                                               modifiedLoc = self.thirdScreenshot) is not None
 
-    # @skip
+    @skip
     def testGetDiffWithSameScreenshots(self):
         self.screenshotProcess.img1 = self.first
         self.screenshotProcess.img2 = self.second
         assert self.screenshotProcess.getDiff() is None
 
-    # @skip
+    @skip
     def testGetDiffReturnsValueWithoutLocation(self):
         self.screenshotProcess.img1 = self.first
         self.screenshotProcess.img2 = self.third
@@ -121,29 +121,29 @@ class TestDiffer:
         # diff.show()
         assert diff is not None
 
-    # @skip
+    @skip
     def testGetChangeVoidParameters(self):
         self.screenshotProcess.img1 = None
         self.screenshotProcess.img2 = None
         with pytest.raises(UnboundLocalError):
             self.screenshotProcess.getChange()
 
-    # @skip
+    @skip
     def testGetChangeInvalidFirstLocation(self):
         assert self.screenshotProcess.getChange(originalLoc = self.nonExistentScreenLoc,
                                                 modifiedLoc = self.firstScreenshot) is None
 
-    # @skip
+    @skip
     def testGetChangeInvalidSecondLocation(self):
         assert self.screenshotProcess.getChange(originalLoc = self.firstScreenshot,
                                                 modifiedLoc = self.nonExistentScreenLoc) is None
 
-    # @skip
+    @skip
     def testGetChangeReturnsValueWithLocation(self):
         assert self.screenshotProcess.getChange(originalLoc = self.firstScreenshot,
                                                 modifiedLoc = self.thirdScreenshot) is not None
 
-    # @skip
+    @skip
     def testGetChangeReturnsValueWithoutLocation(self):
         self.screenshotProcess.img1 = self.first
         self.screenshotProcess.img2 = self.third
@@ -151,7 +151,7 @@ class TestDiffer:
         # change.show()
         assert change is not None
 
-    # @skip
+    @skip
     def testGetChangeWithSameScreenshots(self):
         self.screenshotProcess.img1 = self.first
         self.screenshotProcess.img2 = self.second
@@ -166,11 +166,11 @@ class TestDiffer:
         loc = {'View': 'SomeView', 'Date': datetime.datetime.now().date().isoformat(), 'Function': 'screenshot4.png'}
         assert self.screenshotProcess.locateImgForDiff(loc) is None
 
-    @skip
+    # @skip
     def testRun(self):
         self.screenshotProcess.run()
         view = self.thirdScreenshot['View']
-        date = datetime.datetime.now().date().isoformat()
+        date = (datetime.datetime.now() - timedelta(days = 1)).date().isoformat()
         diff = self.screenshotProcess.imgs[view][date]['newscreenshot3Diff.png']
         change = self.screenshotProcess.imgs[view][date]['newscreenshot3Change.png']
         assert diff is not None and change is not None

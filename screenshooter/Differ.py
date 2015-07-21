@@ -189,7 +189,7 @@ class Differ:
                     originalLoc = self.locateImgForDiff(modifiedLoc)
                     diff = None
                     change = None
-                    if originalLoc is not None:
+                    if originalLoc:
                         modifiedImg = self.getImg(modifiedLoc, True)
                         originalImg = self.getImg(originalLoc)
                         if self.equals(originalImg, modifiedImg):
