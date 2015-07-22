@@ -1,4 +1,5 @@
 from screenshooter.Differ import Differ
+import screenshooter.config as config
 from selenium.webdriver.common.keys import Keys
 from PIL import Image
 from datetime import datetime
@@ -102,7 +103,7 @@ class Capsule():
         element.send_keys(Keys.ENTER)
         self.screenshot(driver, view, function)
 
-    def generateDiffs(self, serviceName):
+    def generateDiffs(self, serviceName = config.service):
         if serviceName.upper() == "S3":
             from screenshooter.saves import s3Service
             service = s3Service()

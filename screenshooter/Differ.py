@@ -1,6 +1,7 @@
 from PIL import Image
 from PIL import ImageChops
 import datetime
+import screenshooter.config as config
 
 
 class Differ:
@@ -130,17 +131,18 @@ class Differ:
     # If originalLoc and modifiedLoc are not provided it will use the last images opened
     # using the equals method. OriginalLoc must be the original image and modifiedLoc
     # must be the modified image
-    def getDiff(self, color = (0, 150, 255), highlightDiff = True,
-                originalLoc = None, modifiedLoc = None):
+    def getDiff(self, originalLoc = None, modifiedLoc = None):
 
         dif = self.sanitizeForDiff(originalLoc, modifiedLoc)
 
         if dif is None:
             return None
 
+        color = config.highlightColor
+
         dif = ImageChops.invert(dif)
 
-        if not highlightDiff:
+        if not color:
             return Image.blend(dif, self.originalImg, 0.2)
 
         width = dif.size[0]
@@ -157,13 +159,14 @@ class Differ:
     def subtractPixels(self, first, second):
         return tuple([abs(first[0] - second[0]), abs(first[1] - second[1]), abs(first[2] - second[2]), abs(first[3] - second[3])])
 
-    def getChange(self, color = (0, 150, 255), highlightDiff = True,
-                  originalLoc = None, modifiedLoc = None):
+    def getChange(self, originalLoc = None, modifiedLoc = None):
 
         diff = self.sanitizeForDiff(originalLoc, modifiedLoc)
 
         if diff is None:
             return None
+
+        color = config.highlightColor
 
         mergingImg = ImageChops.invert(self.originalImg)
 
@@ -189,6 +192,8 @@ class Differ:
         return Image.blend(mergingImg, self.originalImg, 0.2)
 
     def run(self):
+        diffFlag = config.runDiff
+        changeFlag = config.runChange
         for view in self.imgs['tmp']:
             for date in self.imgs['tmp'][view]:
                 for function in self.imgs['tmp'][view][date]:
@@ -201,7 +206,9 @@ class Differ:
                         originalImg = self.getImg(originalLoc)
                         if self.equals(originalImg, modifiedImg):
                             continue
-                        diff = self.getDiff()
-                        change = self.getChange()
+                        if diffFlag:
+                            diff = self.getDiff()
+                        if changeFlag:
+                            change = self.getChange()
                     self.store(modifiedLoc, diff, change)
         return True
