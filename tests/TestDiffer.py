@@ -3,13 +3,14 @@ import pytest
 import datetime
 from datetime import timedelta
 from PIL import Image
+from PIL import ImageChops
 from screenshooter.Differ import Differ
 import time
 
 
 class TestDiffer:
 
-    skip = pytest.mark.skipif(True, reason = "I said skip")
+    skip = pytest.mark.skipif(False, reason = "I said skip")
 
     nonExistentScreenLoc = "blah"
 

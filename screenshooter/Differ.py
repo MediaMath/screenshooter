@@ -140,12 +140,19 @@ class Differ:
         if not highlightDiff:
             return Image.blend(dif, firstImg, 0.2)
 
-        for x in range(dif.size[0]):
-            for y in range(dif.size[1]):
-                if dif.getpixel((x, y)) == (255, 255, 255, 255):
+        width = dif.size[0]
+        height = dif.size[1]
+        pixel = dif.load()
+        for x in range(width):
+            for y in range(height):
+                if pixel[x, y] == (255, 255, 255, 255):
                     continue
-                dif.putpixel((x, y), color)
+                pixel[x, y] = color
+
         return Image.blend(dif, firstImg, 0.2)
+
+    def subtractPixels(self, first, second):
+        return tuple([abs(first[0] - second[0]), abs(first[1] - second[1]), abs(first[2] - second[2]), abs(first[3] - second[3])])
 
     def getChange(self, color = (0, 150, 255), highlightDiff = True,
                   originalLoc = None, modifiedLoc = None):
@@ -158,28 +165,28 @@ class Differ:
         if diff.getbbox() is None:
             return None
 
-        invertedOriginal = ImageChops.invert(originalImg)
-        mergingImg = invertedOriginal.copy()
+        mergingImg = originalImg.copy()
 
-        for x in range(mergingImg.size[0]):
-            for y in range(mergingImg.size[1]):
-                pixel = diff.getpixel((x, y))
-                if pixel == (0, 0, 0, 0):
-                    continue
-                mergingImg.putpixel((x, y), pixel)
+        width = mergingImg.size[0]
+        height = mergingImg.size[1]
 
-        finalDiff = ImageChops.invert(ImageChops.difference(mergingImg, invertedOriginal))
+        diffPixels = diff.load()
+        mergePixel = mergingImg.load()
 
-        if not highlightDiff:
-            return Image.blend(finalDiff, originalImg, 0.2)
+        for x in range(width):
+            for y in range(height):
+                diffPixel = diffPixels[x, y]
+                if diffPixel != (0, 0, 0, 0):
+                    if self.subtractPixels(diffPixel, mergePixel[x, y]) == (0, 0, 0, 0):
+                        mergePixel[x, y] = (255, 255, 255, 255)
+                    else:
+                        if color is None:
+                            continue
+                        mergePixel[x, y] = color
+                else:
+                    mergePixel[x, y] = (255, 255, 255, 255)
 
-        for x in range(finalDiff.size[0]):
-            for y in range(finalDiff.size[1]):
-                if finalDiff.getpixel((x, y)) == (255, 255, 255, 255):
-                    continue
-                finalDiff.putpixel((x, y), color)
-
-        return Image.blend(finalDiff, originalImg, 0.2)
+        return Image.blend(mergingImg, originalImg, 0.2)
 
     def run(self):
         for view in self.imgs['tmp']:
