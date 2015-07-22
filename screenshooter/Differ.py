@@ -5,21 +5,23 @@ import datetime
 
 class Differ:
     def __init__(self):
-        self.img1 = None
-        self.img2 = None
         self.imgs = dict()
+        self.diff = None
+        self.originalImg = None
+        self.modifiedImg = None
 
     # Identifies exact equality, can't differentiate between the following:
     # image size, image file type, image mode (ie. RGB/L/P/CMYK)
     def equals(self, firstImg, secondImg):
         if firstImg is None or secondImg is None:
             return False
-        self.img1 = firstImg
-        self.img2 = secondImg
-        output = ImageChops.difference(firstImg, secondImg)
-        if output.getbbox() != None:
+        self.originalImg = firstImg
+        self.modifiedImg = secondImg
+        self.diff = ImageChops.difference(firstImg, secondImg)
+        if self.diff.getbbox() != None:
             return False
         else:
+            self.diff = None
             return True
 
     def storeScreenshot(self, imgLoc):
@@ -109,16 +111,21 @@ class Differ:
             return None
 
     def sanitizeForDiff(self, originalLoc, modifiedLoc):
-        if (originalLoc is None and modifiedLoc is None) and (self.img1 is None or self.img2 is None):
+        if (originalLoc is None and modifiedLoc is None) and (self.originalImg is None or self.modifiedImg is None):
             raise UnboundLocalError("The stored images are null and the parameters" +
                                     " do not provide locations to open them")
         if originalLoc is not None and modifiedLoc is not None:
             try:
-                return self.getImg(originalLoc), self.getImg(modifiedLoc, True)
+                self.originalImg = self.getImg(originalLoc)
+                self.modifiedImg = self.getImg(modifiedLoc, True)
+                self.diff = ImageChops.difference(self.originalImg, self.modifiedImg)
+                if self.diff.getbbox() is None:
+                    return None
+                return self.diff
             except (IOError, KeyError, TypeError):
-                return None, None
+                return None
         else:
-            return self.img1, self.img2
+            return self.diff
 
     # If originalLoc and modifiedLoc are not provided it will use the last images opened
     # using the equals method. OriginalLoc must be the original image and modifiedLoc
@@ -126,19 +133,15 @@ class Differ:
     def getDiff(self, color = (0, 150, 255), highlightDiff = True,
                 originalLoc = None, modifiedLoc = None):
 
-        firstImg, secondImg = self.sanitizeForDiff(originalLoc, modifiedLoc)
-        if firstImg is None or secondImg is None:
-            return None
+        dif = self.sanitizeForDiff(originalLoc, modifiedLoc)
 
-        dif = ImageChops.difference(firstImg, secondImg)
-
-        if dif.getbbox() is None:
+        if dif is None:
             return None
 
         dif = ImageChops.invert(dif)
 
         if not highlightDiff:
-            return Image.blend(dif, firstImg, 0.2)
+            return Image.blend(dif, self.originalImg, 0.2)
 
         width = dif.size[0]
         height = dif.size[1]
@@ -149,7 +152,7 @@ class Differ:
                     continue
                 pixel[x, y] = color
 
-        return Image.blend(dif, firstImg, 0.2)
+        return Image.blend(dif, self.originalImg, 0.2)
 
     def subtractPixels(self, first, second):
         return tuple([abs(first[0] - second[0]), abs(first[1] - second[1]), abs(first[2] - second[2]), abs(first[3] - second[3])])
@@ -157,15 +160,12 @@ class Differ:
     def getChange(self, color = (0, 150, 255), highlightDiff = True,
                   originalLoc = None, modifiedLoc = None):
 
-        originalImg, modifiedImg = self.sanitizeForDiff(originalLoc, modifiedLoc)
-        if originalImg is None or modifiedImg is None:
+        diff = self.sanitizeForDiff(originalLoc, modifiedLoc)
+
+        if diff is None:
             return None
 
-        diff = ImageChops.difference(originalImg, modifiedImg)
-        if diff.getbbox() is None:
-            return None
-
-        mergingImg = originalImg.copy()
+        mergingImg = self.originalImg.copy()
 
         width = mergingImg.size[0]
         height = mergingImg.size[1]
@@ -186,7 +186,7 @@ class Differ:
                 else:
                     mergePixel[x, y] = (255, 255, 255, 255)
 
-        return Image.blend(mergingImg, originalImg, 0.2)
+        return Image.blend(mergingImg, self.originalImg, 0.2)
 
     def run(self):
         for view in self.imgs['tmp']:

@@ -88,8 +88,8 @@ class TestDiffer:
 
     @skip
     def testGetDiffVoidParameters(self):
-        self.screenshotProcess.img1 = None
-        self.screenshotProcess.img2 = None
+        self.screenshotProcess.originalImg = None
+        self.screenshotProcess.modifiedImg = None
         with pytest.raises(UnboundLocalError):
             self.screenshotProcess.getDiff()
 
@@ -110,22 +110,23 @@ class TestDiffer:
 
     @skip
     def testGetDiffWithSameScreenshots(self):
-        self.screenshotProcess.img1 = self.first
-        self.screenshotProcess.img2 = self.second
+        self.screenshotProcess.originalImg = self.first
+        self.screenshotProcess.modifiedImg = self.second
         assert self.screenshotProcess.getDiff() is None
 
     @skip
     def testGetDiffReturnsValueWithoutLocation(self):
-        self.screenshotProcess.img1 = self.first
-        self.screenshotProcess.img2 = self.third
+        self.screenshotProcess.diff = ImageChops.difference(self.first, self.third)
+        self.screenshotProcess.originalImg = self.first
+        self.screenshotProcess.modifiedImg = self.third
         diff = self.screenshotProcess.getDiff()
         # diff.show()
         assert diff is not None
 
     @skip
     def testGetChangeVoidParameters(self):
-        self.screenshotProcess.img1 = None
-        self.screenshotProcess.img2 = None
+        self.screenshotProcess.originalImg = None
+        self.screenshotProcess.modifiedImg = None
         with pytest.raises(UnboundLocalError):
             self.screenshotProcess.getChange()
 
@@ -146,16 +147,17 @@ class TestDiffer:
 
     @skip
     def testGetChangeReturnsValueWithoutLocation(self):
-        self.screenshotProcess.img1 = self.first
-        self.screenshotProcess.img2 = self.third
+        self.screenshotProcess.diff = ImageChops.difference(self.first, self.third)
+        self.screenshotProcess.originalImg = self.first
+        self.screenshotProcess.modifiedImg = self.third
         change = self.screenshotProcess.getChange()
         # change.show()
         assert change is not None
 
     @skip
     def testGetChangeWithSameScreenshots(self):
-        self.screenshotProcess.img1 = self.first
-        self.screenshotProcess.img2 = self.second
+        self.screenshotProcess.originalImg = self.first
+        self.screenshotProcess.modifiedImg = self.second
         assert self.screenshotProcess.getChange() is None
 
     @skip
