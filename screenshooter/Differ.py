@@ -165,7 +165,7 @@ class Differ:
         if diff is None:
             return None
 
-        mergingImg = self.originalImg.copy()
+        mergingImg = ImageChops.invert(self.originalImg)
 
         width = mergingImg.size[0]
         height = mergingImg.size[1]
