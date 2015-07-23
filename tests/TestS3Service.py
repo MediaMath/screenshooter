@@ -94,7 +94,7 @@ class s3():
 
     def get_object(self, **kwargs):
         bytesImgIO = io.BytesIO()
-        byteImg = Image.open(config.baseProjectDir + "imgs/screenshot1.png")
+        byteImg = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
         byteImg.save(bytesImgIO, "PNG")
         bytesImgIO.seek(0)
         return {'Body': bytesImgIO}

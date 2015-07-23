@@ -10,6 +10,8 @@ class Differ:
         self.diff = None
         self.originalImg = None
         self.modifiedImg = None
+        self.archiveTime = None
+        self.imgType = config.pictureType
 
     # Identifies exact equality, can't differentiate between the following:
     # image size, image file type, image mode (ie. RGB/L/P/CMYK)
@@ -25,6 +27,22 @@ class Differ:
             self.diff = None
             return True
 
+    def archiveImgs(self, imgLoc):
+        view = imgLoc['View']
+        date = imgLoc['Date']
+        function = imgLoc['Function']
+
+        if self.archiveTime is None:
+            self.archiveTime = datetime.datetime.now().isoformat()
+        if self.archiveTime not in self.imgs[view]:
+            self.imgs[view][self.archiveTime] = dict()
+        self.imgs[view][self.archiveTime]["new" + function] = self.imgs[view][date][function]
+        imgName = function.partition('.')
+        if imgName[0] + "Diff" + self.imgType in self.imgs[view][date]:
+            self.imgs[view][self.archiveTime]["new" + imgName[0] + "Diff.png"] = self.imgs[view][date][imgName[0] + "Diff" + self.imgType]
+        if imgName[0] + "Change" + self.imgType in self.imgs[view][date]:
+            self.imgs[view][self.archiveTime]["new" + imgName[0] + "Change.png"] = self.imgs[view][date][imgName[0] + "Change" + self.imgType]
+
     def storeScreenshot(self, imgLoc):
         if imgLoc is None:
             return False
@@ -38,6 +56,8 @@ class Differ:
                 self.imgs[view] = dict()
             if date not in self.imgs[view]:
                 self.imgs[view][date] = dict()
+            if function in self.imgs[view][date]:
+                self.archiveImgs(imgLoc)
             self.imgs[view][date]["new" + function] = self.imgs['tmp'][view][date][function]
         except KeyError:
             del self.imgs[view][date]["new" + function]
@@ -52,7 +72,7 @@ class Differ:
         date = imgLoc['Date']
         imgName = imgLoc['Function'].partition('.')
 
-        diffName = "new" + imgName[0] + "Diff.png"
+        diffName = "new" + imgName[0] + "Diff" + self.imgType
         self.imgs[view][date][diffName] = diffImg
         return True
 
@@ -64,7 +84,7 @@ class Differ:
         date = imgLoc['Date']
         imgName = imgLoc['Function'].partition('.')
 
-        changeName = "new" + imgName[0] + "Change.png"
+        changeName = "new" + imgName[0] + "Change" + self.imgType
         self.imgs[view][date][changeName] = changeImg
 
         return True

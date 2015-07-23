@@ -60,11 +60,12 @@ class fsService():
             for view in fnmatch.filter(imgs, "*View"):
                 if not os.path.exists(os.path.join(config.baseImageDir, view)):
                     os.mkdir(os.path.join(config.baseImageDir, view))
-                if not os.path.exists(os.path.join(config.baseImageDir, view, today)):
-                    os.mkdir(os.path.join(config.baseImageDir, view, today))
-                for function in fnmatch.filter(imgs[view][today], "new*"):
-                    imgs[view][today][function].save(os.path.join(config.baseImageDir, view,
-                                                                  today, self.removeNew(function)))
+                for day in fnmatch.filter(imgs[view], today + "*"):
+                    if not os.path.exists(os.path.join(config.baseImageDir, view, day)):
+                        os.mkdir(os.path.join(config.baseImageDir, view, day))
+                    for function in fnmatch.filter(imgs[view][day], "new*"):
+                        imgs[view][day][function].save(os.path.join(config.baseImageDir, view,
+                                                                    day, self.removeNew(function)))
             return True
         except (KeyError, IOError):
             return False
@@ -114,16 +115,16 @@ class s3Service():
             parsedKey = self.parseOutBackslash(content['Key'])['array']
             if len(parsedKey) != 3:
                 continue
-            parse0 = parsedKey[0]
-            parse1 = parsedKey[1]
-            parse2 = parsedKey[2]
+            view = parsedKey[0]
+            date = parsedKey[1]
+            function = parsedKey[2]
             data = s3.get_object(Bucket = config.bucket, Key = content['Key'])
             dataBytesIO = io.BytesIO(data['Body'].read())
-            if parse0 not in dictPics:
-                dictPics[parse0] = dict()
-            if parse1 not in dictPics[parse0]:
-                dictPics[parse0][parse1] = dict()
-            dictPics[parse0][parse1][parse2] = Image.open(dataBytesIO)
+            if view not in dictPics:
+                dictPics[view] = dict()
+            if date not in dictPics[view]:
+                dictPics[view][date] = dict()
+            dictPics[view][date][function] = Image.open(dataBytesIO)
         return dictPics
 
     def save(self, imgs):
@@ -137,14 +138,13 @@ class s3Service():
         for view in imgs:
             if view == 'tmp':
                 continue
-            if today not in imgs[view]:
-                continue
-            for function in fnmatch.filter(imgs[view][today], "new*"):
-                bytesImgIO = io.BytesIO()
-                imgs[view][today][function].save(bytesImgIO, "PNG")
-                bytesImgIO.seek(0)
-                bytesToSave = bytesImgIO.read()
-                responses.append(s3.put_object(Body = bytesToSave, Bucket = config.bucket,
-                                               Key = self.concatInBackslash(view, today, self.removeNew(function)), ContentType = "image/png"))
-                count += 1
+            for day in fnmatch.filter(imgs[view], today + "*"):
+                for function in fnmatch.filter(imgs[view][day], "new*"):
+                    bytesImgIO = io.BytesIO()
+                    imgs[view][today][function].save(bytesImgIO, "PNG")
+                    bytesImgIO.seek(0)
+                    bytesToSave = bytesImgIO.read()
+                    responses.append(s3.put_object(Body = bytesToSave, Bucket = config.bucket,
+                                                   Key = self.concatInBackslash(view, today, self.removeNew(function)), ContentType = "image/png"))
+                    count += 1
         return {'count': count, 'responses': responses}
