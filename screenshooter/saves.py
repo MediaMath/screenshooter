@@ -8,6 +8,14 @@ import shutil
 import boto3 as boto
 
 
+def removeNew(val):
+    output = ""
+    parsedVals = val.split("new")
+    for parsedval in parsedVals:
+        output += parsedval
+    return output
+
+
 class fsService():
 
     def __init__(self):
@@ -45,13 +53,6 @@ class fsService():
         dictPics['tmp'] = screenshotsTemp
         return dictPics
 
-    def removeNew(self, val):
-        output = ""
-        parsedVals = val.split("new")
-        for parsedval in parsedVals:
-            output += parsedval
-        return output
-
     def save(self, imgs):
         if imgs is None:
             raise ("Can not save anything, the multi-dimensional dictionary is None")
@@ -64,7 +65,7 @@ class fsService():
                     os.mkdir(os.path.join(config.baseImageDir, view, today))
                 for function in fnmatch.filter(imgs[view][today], "new*"):
                     imgs[view][today][function].save(os.path.join(config.baseImageDir, view,
-                                                                  today, self.removeNew(function)))
+                                                                  today, removeNew(function)))
             return True
         except (KeyError, IOError):
             return False
@@ -95,13 +96,6 @@ class s3Service():
             else:
                 val += arg
         return val
-
-    def removeNew(self, val):
-        output = ""
-        parsedVals = val.split("new")
-        for parsedval in parsedVals:
-            output += parsedval
-        return output
 
     def collectImages(self, imgs = None):
         dictPics = imgs or dict()
@@ -145,6 +139,6 @@ class s3Service():
                 bytesImgIO.seek(0)
                 bytesToSave = bytesImgIO.read()
                 responses.append(s3.put_object(Body = bytesToSave, Bucket = config.bucket,
-                                               Key = self.concatInBackslash(view, today, self.removeNew(function)), ContentType = "image/png"))
+                                               Key = self.concatInBackslash(view, today, removeNew(function)), ContentType = "image/png"))
                 count += 1
         return {'count': count, 'responses': responses}
