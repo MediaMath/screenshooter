@@ -4,7 +4,7 @@ import shutil
 import datetime
 import screenshooter.config as config
 from screenshooter.saves import fsService
-from screenshooter.Screenshot import Screenshot
+from screenshooter.Differ import Differ
 
 
 def setup_module(module):
@@ -54,19 +54,19 @@ class TestFSService():
     directoryLocationOfScreenshots = config.baseImageDir
 
     def setup_method(self, method):
-        self.screenshotProcess = Screenshot()
+        self.screenshotProcess = Differ()
         self.fs = fsService()
 
     def testCollectFilesystemScreenshotsReturnsValue(self):
-        assert self.fs.collectFSImgs(self.directoryLocationOfScreenshots) is not None
+        assert self.fs.collectImages(self.directoryLocationOfScreenshots) is not None
 
     def testCollectFilesystemScreenshotsFails(self):
         with pytest.raises(FileNotFoundError):
-            self.fs.collectFSImgs(self.nonExistentScreenLoc)
+            self.fs.collectImages(self.nonExistentScreenLoc)
 
     def testSaveFS(self):
-        imgs = self.fs.collectFSImgs(self.directoryLocationOfScreenshots)
-        assert self.fs.saveFS(imgs) == True
+        imgs = self.fs.collectImages(self.directoryLocationOfScreenshots)
+        assert self.fs.save(imgs) == True
 
     def testCleanupTmpDir(self):
         self.fs.cleanupFS()

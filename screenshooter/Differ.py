@@ -2,6 +2,7 @@ from PIL import Image
 from PIL import ImageChops
 import datetime
 import screenshooter.config as config
+import screenshooter.capsule
 
 
 class Differ:
@@ -105,20 +106,24 @@ class Differ:
     #pass in the location of the modified img, returns location of original image
     def locateImgForDiff(self, loc):
         #find the oldest date stored and check if it has function, if so return location
-        today = datetime.datetime.now().date().isoformat()
-        try:
-            for dateDir in sorted(self.imgs[loc['View']], reverse = True):
-                if dateDir == today:
-                    continue
-                loc['Date'] = dateDir
-                imgReference = self.getImg(loc)
-                if imgReference is not None:
-                    return {'View': loc['View'], 'Date': dateDir, 'Function': loc['Function']}
-                else:
-                    continue
-        except KeyError:
-            pass
-        return None
+        # today = datetime.datetime.now().date().isoformat()
+        # try:
+        #     for dateDir in sorted(self.imgs[loc['View']], reverse = True):
+        #         if dateDir == today:
+        #             continue
+        #         loc['Date'] = dateDir
+        #         imgReference = self.getImg(loc)
+        #         if imgReference is not None:
+        #             return {'View': loc['View'], 'Date': dateDir, 'Function': loc['Function']}
+        #         else:
+        #             continue
+        # except KeyError:
+        #     pass
+        # return None
+        imgReference = screenshooter.capsule.Capsule.collectImg(self.imgs, loc)
+        if imgReference is None:
+            return None
+        return imgReference
 
     def getImg(self, loc, tmp = False):
         view = loc['View']

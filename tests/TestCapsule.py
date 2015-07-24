@@ -8,7 +8,7 @@ import time
 
 class TestCapsule():
 
-    skip = pytest.mark.skipif(True, reason = "I said skip")
+    skip = pytest.mark.skipif(False, reason = "I said skip")
 
     def setup_method(self, method):
         self.capsule = Capsule()
@@ -76,8 +76,8 @@ class TestCapsule():
         self.capsule.imgs['tmp']["inputTestView"][self.today]["inputSubmissionTest.png"].show()
         assert self.capsule.imgs['tmp']["inputTestView"][self.today]["inputSubmissionTest.png"] is not None
 
-    @skip
-    def testGenerateDiffs(self):
-        self.driver.get("http://google.com")
-        self.capsule.screenshot(self.driver, "HompageView", "GenerateDiffsTest")
-        assert self.capsule.generateDiffs("S3") == True
+    # @skip
+    # def testGenerateDiffs(self):
+    #     self.driver.get("http://google.com")
+    #     self.capsule.screenshot(self.driver, "HompageView", "GenerateDiffsTest")
+    #     assert self.capsule.generateDiffs("S3") == True

@@ -38,3 +38,14 @@ browserHeight = 720
 
 #Default service to use
 service = 'S3'
+
+#Saves
+
+#Environment Directory
+envDir = 'QA'
+
+#Base Directory to diff images against
+baseDir = 'Base'
+
+#Save the screenshots taken on next run to the base directory
+baseStore = True

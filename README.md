@@ -501,9 +501,9 @@ Just to note, all tests have been done using OSX and have not be tested on any o
 - [x] How Capsule and its various functions work / should be called
 
 ####For Next Version
-- [ ] Allow modifications of Differ via config instead of parameters
-- [ ] How to deal with Today changes in UI
-- [ ] Speed Improvements
+- [x] Allow modifications of Differ via config instead of parameters
+- [x] How to deal with Today changes in UI
+- [x] Speed Improvements
 
 ##License
 Copyright (c) MediaMath, Inc. 2015

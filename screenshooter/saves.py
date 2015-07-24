@@ -121,7 +121,32 @@ class s3Service():
             dictPics[view][date][function] = Image.open(dataBytesIO)
         return dictPics
 
+    def collectImg(self, imgs, tmpLoc):
+        tmpView = tmpLoc['View']
+        tmpFunction = tmpLoc['Function']
+
+        session = self.boto.session.Session(aws_access_key_id = config.accessKey, aws_secret_access_key = config.secretKey)
+        s3 = session.client('s3')
+
+        loc = "{}/{}/{}/{}".format(config.envDir, config.baseDir, tmpView, tmpFunction)
+        try:
+            data = s3.get_object(Bucket = config.bucket, Key = loc)
+        except ClientError:
+            return None
+        dataBytesIO = io.BytesIO(data['Body'].read())
+        date = data['LastModified'].date().isoformat()
+        if tmpView not in imgs:
+            imgs[tmpView] = dict()
+        if date not in imgs[tmpView]:
+            imgs[tmpView][date] = dict()
+        imgs[tmpView][date][tmpFunction] = Image.open(dataBytesIO)
+        return {'View': tmpView, 'Date': date, 'Function': tmpFunction}
+
     def save(self, imgs):
+        environmentDir = config.envDir
+        baseDir = config.baseDir
+        bucket = config.bucket
+        saveToBase = config.baseStore
         if imgs is None:
             raise ("Can not save anything, the multi-dimensional dictionary is None")
         responses = list()
@@ -135,10 +160,15 @@ class s3Service():
             for day in fnmatch.filter(imgs[view], today + "*"):
                 for function in fnmatch.filter(imgs[view][day], "new*"):
                     bytesImgIO = io.BytesIO()
-                    imgs[view][today][function].save(bytesImgIO, "PNG")
+                    imgs[view][day][function].save(bytesImgIO, "PNG")
                     bytesImgIO.seek(0)
                     bytesToSave = bytesImgIO.read()
-                    responses.append(s3.put_object(Body = bytesToSave, Bucket = config.bucket,
-                                                   Key = self.concatInBackslash(view, today, removeNew(function)), ContentType = "image/png"))
+                    responses.append(s3.put_object(Body = bytesToSave, Bucket = bucket,
+                                                   Key = self.concatInBackslash(environmentDir, view, day, removeNew(function)), ContentType = "image/png"))
+                    #check to make sure not diff or change
+                    if "Diff" not in function and "Change" not in function and saveToBase:
+                        responses.append(s3.put_object(Body = bytesToSave, Bucket = config.bucket,
+                                                       Key = self.concatInBackslash(environmentDir, baseDir, view, removeNew(function)),
+                                                       ContentType = "image/png"))
                     count += 1
         return {'count': count, 'responses': responses}
