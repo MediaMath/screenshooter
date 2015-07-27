@@ -2,7 +2,7 @@ from PIL import Image
 from PIL import ImageChops
 import datetime
 import screenshooter.config as config
-import screenshooter.capsule
+import screenshooter.saves
 
 
 class Differ:
@@ -104,7 +104,7 @@ class Differ:
         return True
 
     #pass in the location of the modified img, returns location of original image
-    def locateImgForDiff(self, loc):
+    def locateImgForDiff(self, loc, serviceName = config.service):
         #find the oldest date stored and check if it has function, if so return location
         # today = datetime.datetime.now().date().isoformat()
         # try:
@@ -120,7 +120,10 @@ class Differ:
         # except KeyError:
         #     pass
         # return None
-        imgReference = screenshooter.capsule.Capsule.collectImg(self.imgs, loc)
+        if serviceName.upper() == "S3":
+            imgReference = screenshooter.saves.s3Service.collectImg(self.imgs, loc)
+        if serviceName.upper() == "FILESYSTEM":
+            imgReference = screenshooter.saves.fsService.collectImg(self.imgs, loc)
         if imgReference is None:
             return None
         return imgReference

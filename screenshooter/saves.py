@@ -35,23 +35,30 @@ class fsService():
                                                                    dirView, dirDate, filename))
                         screenshotsView[dirDate] = screenshotsDate
                 dictPics[dirView] = screenshotsView
-
-        #this portion only grabs the images in the tmp directory - I don't think I need this (revisit)
-        screenshotsTemp = dict()
-        for dirView in fnmatch.filter(os.listdir(os.path.join(baseDir, "tmp")), "*View"):
-            if os.path.isdir(os.path.join(baseDir, "tmp", dirView)):
-                screenshotsView = dict()
-                for dirDate in fnmatch.filter(os.listdir(os.path.join(baseDir, "tmp", dirView)), "*-*-*"):
-                    if os.path.isdir(os.path.join(os.path.join(baseDir, "tmp", dirView, dirDate))):
-                        screenshotsDate = dict()
-                        for filename in fnmatch.filter(os.listdir(os.path.join(baseDir,
-                                                       "tmp", dirView, dirDate)), "*" + config.pictureType):
-                            screenshotsDate[filename] = Image.open(os.path.join(baseDir,
-                                                                   "tmp", dirView, dirDate, filename))
-                screenshotsView[dirDate] = screenshotsDate
-            screenshotsTemp[dirView] = screenshotsView
-        dictPics['tmp'] = screenshotsTemp
         return dictPics
+
+    def collectImg(self, imgs, tmpLoc):
+        tmpView = tmpLoc['View']
+        tmpDate = tmpLoc['Date']
+        tmpFunction = tmpLoc['Function']
+
+        if tmpView in imgs:
+            if tmpDate in imgs[tmpView]:
+                if tmpFunction in imgs[tmpView][tmpDate]:
+                    tmp = imgs[tmpView][tmpDate][tmpFunction]
+                    if tmp:
+                        return tmpLoc
+                    return None
+
+        path = os.path.join(config.envDir, config.baseDir, tmpView, tmpFunction)
+        modTime = os.stat(path).st_mtime
+        date = datetime.datetime.fromtimestamp(modTime).date()
+        if tmpView not in imgs:
+            imgs[tmpView] = dict()
+        if date not in imgs[tmpView]:
+            imgs[tmpView][date] = dict()
+        imgs[tmpView][date][tmpFunction] = Image.open(path)
+        return {'View': tmpView, 'Date': date, 'Function': tmpFunction}
 
     def save(self, imgs):
         if imgs is None:
