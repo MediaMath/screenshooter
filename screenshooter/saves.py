@@ -23,18 +23,25 @@ class fsService():
 
     def collectImages(self, baseDir, imgs = None):
         dictPics = imgs or dict()
-        for dirView in fnmatch.filter(os.listdir(baseDir), "*View"):
-            if os.path.isdir(os.path.join(baseDir, dirView)):
-                screenshotsView = dict()
-                for dirDate in fnmatch.filter(os.listdir(os.path.join(baseDir, dirView)), "*-*-*"):
-                    if os.path.isdir(os.path.join(baseDir, dirView, dirDate)):
-                        screenshotsDate = dict()
-                        for filename in fnmatch.filter(os.listdir(os.path.join(baseDir,
-                                                       dirView, dirDate)), "*" + config.pictureType):
-                            screenshotsDate[filename] = Image.open(os.path.join(baseDir,
-                                                                   dirView, dirDate, filename))
-                        screenshotsView[dirDate] = screenshotsDate
-                dictPics[dirView] = screenshotsView
+
+        previousPath = os.path.join(baseDir, config.envDir, config.baseDir)
+        for dirView in fnmatch.filter(os.listdir(previousPath), "*View"):
+
+            previousPath = os.path.join(previousPath, dirView)
+            if os.path.isdir(previousPath):
+                if dirView not in dictPics:
+                    dictPics[dirView] = dict()
+
+                for filename in fnmatch.filter(os.listdir(previousPath), "*" + config.pictureType):
+                    path = os.path.join(previousPath, filename)
+                    modTime = os.stat(path).st_mtime
+                    date = datetime.datetime.fromtimestamp(modTime).date().isoformat()
+
+                    if date not in dictPics[dirView]:
+                        dictPics[dirView][date] = dict()
+
+                    dictPics[dirView][date][filename] = Image.open(os.path.join(path))
+
         return dictPics
 
     def collectImg(self, imgs, tmpLoc):
@@ -64,6 +71,7 @@ class fsService():
         if imgs is None:
             raise ("Can not save anything, the multi-dimensional dictionary is None")
         today = datetime.datetime.now().date().isoformat()
+        saveToBase = config.baseStore
         try:
             for view in fnmatch.filter(imgs, "*View"):
                 if not os.path.exists(os.path.join(config.baseImageDir, view)):
@@ -74,6 +82,8 @@ class fsService():
                     for function in fnmatch.filter(imgs[view][day], "new*"):
                         imgs[view][day][function].save(os.path.join(config.baseImageDir, view,
                                                                     day, removeNew(function)))
+                        if ("Diff" not in function or "Change" not in function) and saveToBase:
+                            imgs[view][day][function].save(os.path.join(config.baseImageDir, view, removeNew(function)))
             return True
         except (KeyError, IOError):
             return False
@@ -173,7 +183,7 @@ class s3Service():
                     responses.append(s3.put_object(Body = bytesToSave, Bucket = bucket,
                                                    Key = self.concatInBackslash(environmentDir, view, day, removeNew(function)), ContentType = "image/png"))
                     #check to make sure not diff or change
-                    if "Diff" not in function and "Change" not in function and saveToBase:
+                    if ("Diff" not in function and "Change" not in function) and saveToBase:
                         responses.append(s3.put_object(Body = bytesToSave, Bucket = config.bucket,
                                                        Key = self.concatInBackslash(environmentDir, baseDir, view, removeNew(function)),
                                                        ContentType = "image/png"))
