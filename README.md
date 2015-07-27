@@ -212,8 +212,8 @@ imgs = dict(imgsView)
 ```
 - View refers to some string value ending in View i.e. `'SomeView'`
 - Date refers to some string value with the format YYYY-MM-DD i.e. `'2015-06-19'`
-- Function refers to some string value representing the name of the image i.e. `'blah.png'`
-  - **NOTE**: The name of this image is meant to be the name of the function that called for a screenshot, this allows ease of use when identifying what took the screenshot and what it is of. Hence, it is referred to as function.
+- Function is meant to be the name of the function that called for a screenshot, this allows ease of use when identifying what took the screenshot and what it is of. Hence, it is referred to as function.
+  - **NOTE**: The name of the function will be the string value that represents the name of the image i.e. `'blah.png'`
 - The value stored at the end of the dictionary is an image of type PIL.Image
 - All mentions of location refer to location within the multi-dimensional dictionary
 - When passing around any location from function to function it is done in the following format
