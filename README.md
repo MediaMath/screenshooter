@@ -294,7 +294,17 @@ Checks for an exact match of images. Currently is unable to compute if the image
 
 ####Locating Images to Perform Diffs
 
-Returns the location of the already stored image. Requires the dictionary path to the temp image. Loops through the dictionary of images based on the temp image's view dictionary (this results in a dictionary of date dictionaries). The date dictionaries are sorted in descending order so that the oldest date (the one closest to now) is first. The first date is then used to attempt a retrieval of the image already stored, if it doesn't find one it moves on to the next date; if it does find one the dictionary location of that image is returned.
+There are two methods to locate images:
+
+1. The image is grabbed when it is needed.
+  - This will make an api call if an api service is being used.
+  - The image will be added to the multi-dimensional dictionary once it is located
+2. All images are retrieved at once
+  - All api calls are made before locating the image
+  - Checks to see if image exists in dictionary
+
+Requires: location of temp image to diff against
+Returns: location to where the stored image is located in the multi-dimensional dictionary
 
 ###Capsule
 Contents:
@@ -493,7 +503,7 @@ Just to note, all tests have been done using OSX and have not be tested on any o
 - [x] How to deal with Today changes in UI
 - [x] Speed Improvements
 - [x] Create environment and base directory to store images
-- [ ] Update Tests
+- [x] Update Tests
 - [ ] Add Contributing.md
 - [ ] Add Notes
 - [ ] Add code comments
@@ -502,7 +512,7 @@ Just to note, all tests have been done using OSX and have not be tested on any o
 
 ####Things that should be added to Readme
 - [ ] Add Changelog
-- [ ] Update how retrieval of images works
+- [x] Update how retrieval of images works
 
 ####For Next Version
 
