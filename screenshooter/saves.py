@@ -196,5 +196,6 @@ class s3Service():
                         responses.append(s3.put_object(Body = bytesToSave, Bucket = config.bucket,
                                                        Key = self.concatInBackslash(environmentDir, baseDir, view, removeNew(function)),
                                                        ContentType = "image/png"))
+                        count += 1
                     count += 1
         return {'count': count, 'responses': responses}

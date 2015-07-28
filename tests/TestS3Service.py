@@ -3,19 +3,19 @@ import pytest
 import datetime
 from PIL import Image
 import screenshooter.config as config
-from screenshooter.saves import s3Service
+import screenshooter.saves as saves
 
 
 class TestS3Service():
 
     def setup_method(self, method):
-        self.s3 = s3Service()
+        self.s3 = saves.s3Service()
 
     @pytest.fixture()
     def assignImages(self, monkeypatch):
-        self.tmpImg1 = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
-        self.tmpImg2 = Image.open(config.baseProjectDir + "tests/imgs/screenshot2.png")
-        self.tmpImg3 = Image.open(config.baseProjectDir + "tests/imgs/screenshot3.png")
+        self.tmpImg1 = Image.open(config.projectPath + "tests/imgs/screenshot1.png")
+        self.tmpImg2 = Image.open(config.projectPath + "tests/imgs/screenshot2.png")
+        self.tmpImg3 = Image.open(config.projectPath + "tests/imgs/screenshot3.png")
 
         self.img1 = self.tmpImg1
         self.img2 = self.tmpImg1
@@ -23,25 +23,25 @@ class TestS3Service():
 
         self.imgs = dict()
         view = 'SomeView'
-        date = datetime.datetime.now().date().isoformat()
+        self.date = datetime.datetime.now().date().isoformat()
 
         monkeypatch.setitem(self.imgs, 'tmp', dict())
         monkeypatch.setitem(self.imgs['tmp'], view, dict())
         monkeypatch.setitem(self.imgs, view, dict())
-        monkeypatch.setitem(self.imgs['tmp'][view], date, dict())
-        monkeypatch.setitem(self.imgs[view], date, dict())
+        monkeypatch.setitem(self.imgs['tmp'][view], self.date, dict())
+        monkeypatch.setitem(self.imgs[view], self.date, dict())
 
         firstFunction = 'newscreenshot1.png'
-        monkeypatch.setitem(self.imgs['tmp'][view][date], firstFunction, self.tmpImg1)
-        monkeypatch.setitem(self.imgs[view][date], firstFunction, self.img1)
+        monkeypatch.setitem(self.imgs['tmp'][view][self.date], firstFunction, self.tmpImg1)
+        monkeypatch.setitem(self.imgs[view][self.date], firstFunction, self.img1)
 
         secondFunction = 'newscreenshot2.png'
-        monkeypatch.setitem(self.imgs['tmp'][view][date], secondFunction, self.tmpImg2)
-        monkeypatch.setitem(self.imgs[view][date], secondFunction, self.img2)
+        monkeypatch.setitem(self.imgs['tmp'][view][self.date], secondFunction, self.tmpImg2)
+        monkeypatch.setitem(self.imgs[view][self.date], secondFunction, self.img2)
 
         thirdFunction = 'newscreenshot3.png'
-        monkeypatch.setitem(self.imgs['tmp'][view][date], thirdFunction, self.tmpImg3)
-        monkeypatch.setitem(self.imgs[view][date], thirdFunction, self.img3)
+        monkeypatch.setitem(self.imgs['tmp'][view][self.date], thirdFunction, self.tmpImg3)
+        monkeypatch.setitem(self.imgs[view][self.date], thirdFunction, self.img3)
 
     def testParseOutBackslash(self):
         assert any("/" in val for val in self.s3.parseOutBackslash("something/with/slashes")['array']) == False
@@ -54,7 +54,7 @@ class TestS3Service():
 
     def testRemoveNew(self):
         val = "newPhrase"
-        assert self.s3.removeNew(val) == "Phrase"
+        assert saves.removeNew(val) == "Phrase"
 
     def testCollectImagesFromS3(self, monkeypatch):
         monkeypatch.setattr(self.s3, 'boto', boto())
@@ -64,6 +64,12 @@ class TestS3Service():
         monkeypatch.setattr(self.s3, 'boto', boto())
         result = self.s3.save(self.imgs)
         assert result['count'] == len(result['responses'])
+
+    #Add test for collectImg
+    def testCollectImage(self, monkeypatch, assignImages):
+        monkeypatch.setattr(self.s3, 'boto', boto())
+        loc = {'View': "SomeView", "Date": self.date, "Function": 'screenshot1.png'}
+        assert self.s3.collectImg(self.imgs, loc) == loc
 
 
 # Mock / Stub of Boto -> S3 in order to run methods for testing
@@ -94,10 +100,10 @@ class s3():
 
     def get_object(self, **kwargs):
         bytesImgIO = io.BytesIO()
-        byteImg = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
+        byteImg = Image.open(config.projectPath + "tests/imgs/screenshot1.png")
         byteImg.save(bytesImgIO, "PNG")
         bytesImgIO.seek(0)
-        return {'Body': bytesImgIO}
+        return {'Body': bytesImgIO, 'LastModified': datetime.datetime.now()}
 
     def put_object(self, **kwargs):
         return {"Doesn't": "matter"}

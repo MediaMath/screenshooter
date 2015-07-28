@@ -122,10 +122,8 @@ class Differ:
         # return None
         if serviceName.upper() == "S3":
             imgReference = screenshooter.saves.s3Service.collectImg(self.imgs, loc)
-        if serviceName.upper() == "FILESYSTEM":
+        elif serviceName.upper() == "FILESYSTEM":
             imgReference = screenshooter.saves.fsService.collectImg(self.imgs, loc)
-        if imgReference is None:
-            return None
         return imgReference
 
     def getImg(self, loc, tmp = False):

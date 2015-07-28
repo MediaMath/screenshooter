@@ -16,13 +16,13 @@ class TestDiffer:
 
     @classmethod
     def setup_class(cls):
-        cls.tmpImg1 = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
-        cls.tmpImg2 = Image.open(config.baseProjectDir + "tests/imgs/screenshot2.png")
-        cls.tmpImg3 = Image.open(config.baseProjectDir + "tests/imgs/screenshot3.png")
+        cls.tmpImg1 = Image.open(config.projectPath + "tests/imgs/screenshot1.png")
+        cls.tmpImg2 = Image.open(config.projectPath + "tests/imgs/screenshot2.png")
+        cls.tmpImg3 = Image.open(config.projectPath + "tests/imgs/screenshot3.png")
 
-        cls.img1 = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
-        cls.img2 = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
-        cls.img3 = Image.open(config.baseProjectDir + "tests/imgs/screenshot1.png")
+        cls.img1 = cls.tmpImg1
+        cls.img2 = cls.tmpImg1
+        cls.img3 = cls.tmpImg1
 
     def setup_method(self, method):
         yesterday = datetime.datetime.now() - timedelta(days = 1)
@@ -160,20 +160,11 @@ class TestDiffer:
         self.screenshotProcess.modifiedImg = self.second
         assert self.screenshotProcess.getChange() is None
 
-    @skip
-    def testLocateImageForDiff(self):
-        assert self.screenshotProcess.locateImgForDiff(self.thirdScreenshot) is not None
-
-    @skip
-    def testLocateImageForDiffInvalidLocation(self):
-        loc = {'View': 'SomeView', 'Date': datetime.datetime.now().date().isoformat(), 'Function': 'screenshot4.png'}
-        assert self.screenshotProcess.locateImgForDiff(loc) is None
-
     # @skip
-    def testRun(self):
-        self.screenshotProcess.run()
-        view = self.thirdScreenshot['View']
-        date = (datetime.datetime.now() - timedelta(days = 1)).date().isoformat()
-        diff = self.screenshotProcess.imgs[view][date]['newscreenshot3Diff.png']
-        change = self.screenshotProcess.imgs[view][date]['newscreenshot3Change.png']
-        assert diff is not None and change is not None
+    # def testRun(self):
+    #     self.screenshotProcess.run()
+    #     view = self.thirdScreenshot['View']
+    #     date = (datetime.datetime.now() - timedelta(days = 1)).date().isoformat()
+    #     diff = self.screenshotProcess.imgs[view][date]['newscreenshot3Diff.png']
+    #     change = self.screenshotProcess.imgs[view][date]['newscreenshot3Change.png']
+    #     assert diff is not None and change is not None

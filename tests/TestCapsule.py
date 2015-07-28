@@ -37,7 +37,7 @@ class TestCapsule():
         i = 1
         while(True):
             try:
-                self.capsule.imgs['tmp']["HomePageView"][self.today]["getHomePage[" + str(i) + "].png"].show()
+                self.capsule.imgs['tmp']["HomePageView"][self.today]["getHomePage[" + str(i) + "].png"]
             except KeyError:
                 break
             i += 1
@@ -73,7 +73,7 @@ class TestCapsule():
     def testInputWithEnterKeyPressed(self):
         self.driver.get("http://www.w3schools.com/tags/tryit.asp?filename=tryhtml_form_submit")
         self.capsule.inputEnter(self.driver, "inputTestView", "inputSubmissionTest", "Bobby", "view", name = "FirstName")
-        self.capsule.imgs['tmp']["inputTestView"][self.today]["inputSubmissionTest.png"].show()
+        # self.capsule.imgs['tmp']["inputTestView"][self.today]["inputSubmissionTest.png"].show()
         assert self.capsule.imgs['tmp']["inputTestView"][self.today]["inputSubmissionTest.png"] is not None
 
     # @skip
