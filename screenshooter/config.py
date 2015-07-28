@@ -1,23 +1,7 @@
 import os
-#User specific Parameters
-user = os.environ['USER']   # "yourUsername"
 
 #Global Parameters set here
-
-baseImageDir = "/Users/" + user + "/Pictures/"
 pictureType = ".png"  # must contain period
-
-# alter according to where you placed the files, must end in /
-baseProjectDir = "/Users/" + user + "/Documents/Projects/screenshot/"
-
-#Amazon specific parameters
-bucket = os.environ['S3BUCKET']  # "nameOfYourBucket"
-profile = os.environ['S3USER']  # "yourUsername"
-
-# Keys
-accessKey = os.environ['S3ACCESSKEY']
-secretKey = os.environ['S3SECRETKEY']
-
 
 #Differ
 
@@ -49,3 +33,22 @@ baseDir = 'Base'
 
 #Save the screenshots taken on next run to the base directory
 baseStore = True
+
+#Amazon S3
+
+#Amazon specific parameters
+bucket = os.environ['S3BUCKET']  # "nameOfYourBucket"
+profile = os.environ['S3USER']  # "yourUsername"
+
+# Keys
+accessKey = os.environ['S3ACCESSKEY']
+secretKey = os.environ['S3SECRETKEY']
+
+#FILESYSTEM
+
+#User specific Parameters
+username = os.environ['USER']   # "yourUsername"
+
+# alter according to where you placed the files, must end in /
+projectPath = "/Users/" + username + "/Documents/Projects/screenshot/"
+imagePath = "/Users/" + username + "/Pictures/"

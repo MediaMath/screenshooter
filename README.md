@@ -488,22 +488,24 @@ Just to note, all tests have been done using OSX and have not be tested on any o
 ##History
 
 ###TO-DO
-- [x] Update Readme
-- [x] Reorganize Readme
-- [x] Update wording/structure of [Differ](#differ)
-- [x] Rename Screenshot to Differ
-- [x] Add and configure setup.py
 - [ ] Add in missing info (Installation, setup.py url, etc.) once open source is greenlighted
-
-####Things that should be added to Readme
-- [x] How to setup virtual environment
-- [x] How to set and unset environment variables for virtual environments
-- [x] How Capsule and its various functions work / should be called
-
-####For Next Version
 - [x] Allow modifications of Differ via config instead of parameters
 - [x] How to deal with Today changes in UI
 - [x] Speed Improvements
+- [x] Create environment and base directory to store images
+- [ ] Update Tests
+- [ ] Add Contributing.md
+- [ ] Add Notes
+- [ ] Add code comments
+- [ ] Reformat to fit snake_case style
+- [ ] Update Readme
+
+####Things that should be added to Readme
+- [ ] Add Changelog
+- [ ] Update how retrieval of images works
+
+####For Next Version
+
 
 ##License
 Copyright (c) MediaMath, Inc. 2015

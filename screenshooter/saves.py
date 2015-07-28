@@ -57,9 +57,9 @@ class fsService():
                         return tmpLoc
                     return None
 
-        path = os.path.join(config.envDir, config.baseDir, tmpView, tmpFunction)
+        path = os.path.join(config.imagePath, config.envDir, config.baseDir, tmpView, tmpFunction)
         modTime = os.stat(path).st_mtime
-        date = datetime.datetime.fromtimestamp(modTime).date()
+        date = datetime.datetime.fromtimestamp(modTime).date().isoformat()
         if tmpView not in imgs:
             imgs[tmpView] = dict()
         if date not in imgs[tmpView]:
@@ -72,25 +72,34 @@ class fsService():
             raise ("Can not save anything, the multi-dimensional dictionary is None")
         today = datetime.datetime.now().date().isoformat()
         saveToBase = config.baseStore
+        basePath = os.path.join(config.imagePath, config.envDir)
+        baseDir = config.baseDir
         try:
+            if not os.path.exists(basePath):
+                os.mkdir(basePath)
+            if not os.path.exists(os.path.join(basePath, baseDir)):
+                os.mkdir(os.path.join(basePath, baseDir))
             for view in fnmatch.filter(imgs, "*View"):
-                if not os.path.exists(os.path.join(config.baseImageDir, view)):
-                    os.mkdir(os.path.join(config.baseImageDir, view))
+                if not os.path.exists(os.path.join(basePath, view)):
+                    os.mkdir(os.path.join(basePath, view))
+                if not os.path.exists(os.path.join(basePath, baseDir, view)):
+                    os.mkdir(os.path.join(basePath, baseDir, view))
                 for day in fnmatch.filter(imgs[view], today + "*"):
-                    if not os.path.exists(os.path.join(config.baseImageDir, view, day)):
-                        os.mkdir(os.path.join(config.baseImageDir, view, day))
+                    if not os.path.exists(os.path.join(basePath, view, day)):
+                        os.mkdir(os.path.join(basePath, view, day))
                     for function in fnmatch.filter(imgs[view][day], "new*"):
-                        imgs[view][day][function].save(os.path.join(config.baseImageDir, view,
+                        imgs[view][day][function].save(os.path.join(basePath, view,
                                                                     day, removeNew(function)))
                         if ("Diff" not in function or "Change" not in function) and saveToBase:
-                            imgs[view][day][function].save(os.path.join(config.baseImageDir, view, removeNew(function)))
+                            imgs[view][day][function].save(os.path.join(basePath, baseDir, view, removeNew(function)))
             return True
         except (KeyError, IOError):
             return False
 
+    #This is no longer useful, could refactor to eliminate files past a default archive date
     def cleanupFS(self):
         try:
-            path = config.baseImageDir + "tmp"
+            path = config.imagePath + "tmp"
             shutil.rmtree(path)
         except IOError:
             return False
