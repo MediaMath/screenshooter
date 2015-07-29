@@ -21,7 +21,7 @@ Documentation - Elan Moyal - MediaMath Manhattan
 
 Screenshooter allows one to obtain a difference between a current UI layout and a previous UI layout via screenshots.
 
-Screenshooter contains a wrapper on Selenium Webdriver that will help automate the testing of various situations while taking a screenshot of various portions of the UI. Once screenshooter has obtained all the screenshots from the tests a method may be called to compare them against previous versions of that same UI. If there is a difference the updated image is saved along with the difference / change. The previous versions are stored via some other system i.e. on the local filesystem, or something like Amazon S3.
+Screenshooter contains a wrapper on Selenium Webdriver that will help automate the testing of various situations while taking a screenshot of various portions of the UI. Once screenshooter has obtained all the screenshots from the tests a method may be called to compare them against previous versions of that same UI. If there is a difference the updated image is saved along with the difference / change. The previous versions are stored via some other system e.g. on the local filesystem, or something like Amazon S3.
 
 ##Setup
 
@@ -210,10 +210,10 @@ imgsDate = dict(imgsFunction)
 imgsView = dict(imgsDate)
 imgs = dict(imgsView)
 ```
-- View refers to some string value ending in View i.e. `'SomeView'`
-- Date refers to some string value with the format YYYY-MM-DD i.e. `'2015-06-19'`
+- View refers to some string value ending in View e.g. `'SomeView'`
+- Date refers to some string value with the format YYYY-MM-DD e.g. `'2015-06-19'`
 - Function is meant to be the name of the function that called for a screenshot, this allows ease of use when identifying what took the screenshot and what it is of. Hence, it is referred to as function.
-  - **NOTE**: The name of the function will be the string value that represents the name of the image i.e. `'blah.png'`
+  - **NOTE**: The name of the function will be the string value that represents the name of the image e.g. `'blah.png'`
 - The value stored at the end of the dictionary is an image of type PIL.Image
 - All mentions of location refer to location within the multi-dimensional dictionary
 - When passing around any location from function to function it is done in the following format
@@ -355,7 +355,7 @@ This method will press the enter key on the given element. The reason the whole 
 getXPath(**kwargs)
 ```
 Acceptable Key Word Arguments:
-- `tag = 'someHTMLTag'` i.e. `<button></button>`, `<a></a>`, `<input>` etc.
+- `tag = 'someHTMLTag'` e.g. `<button></button>`, `<a></a>`, `<input>` etc.
 - `classTag = 'cssClass'` i.e. `<button class="someClass"></button>`
 - `idTag = 'cssID'` i.e. `<button id="someID"></button>`
 - `value = 'inputValue'` i.e. `<input value="Hello">`
@@ -372,7 +372,7 @@ screenshot(driver, view, function)
 ```
 Args:
 - driver: the selenium driver used
-- view: what view are you currently in i.e. HomePage, AboutMe, etc. (can be more abstract if you wish)
+- view: what view are you currently in e.g. HomePage, AboutMe, etc. (can be more abstract if you wish)
 - function: what function are you using to take a screenshot (make sure this has a descriptive name so it can be easily identifiable as to what role the screenshot has)
 
 This method takes a screenshot of the current screen. The size of the screenshot is based on the size of the browser, it is recommended to create a default size that the browser gets formed to.
@@ -433,7 +433,7 @@ getPage(driver, view, function, page, splash = False, ignoreSplash = True)
 ```
 Args:
 - `driver`, `view`, `function`: passed into `screenshot(driver, view, function)`
-- `page`: url of the page you would like to visit, this must be in the format `http://pagetovisit.com` or `http://www.pagetovisit.com` where `https` is also valid or any other TLD i.e. `.net`, `.org`, etc
+- `page`: url of the page you would like to visit, this must be in the format `http://pagetovisit.com` or `http://www.pagetovisit.com` where `https` is also valid or any other TLD e.g. `.net`, `.org`, etc
 - `splash`: boolean referencing if the page contains a splash page
   - Default: False (there is not a splash page)
 - `ignoreSplash`: boolean referencing whether to take a picture of the splash page as well or to just ignore it
@@ -477,8 +477,8 @@ This method will scroll the length of the viewable page (what you see on your sc
 Checking for equality has a few limitations, all related to only being able to check for exact equality:
 
 1. Images must be of the same [mode type](#http://pillow.readthedocs.org/en/latest/reference/Image.html#PIL.Image.mode)
-2. Images must be of the same size (i.e. 1280 X 720p)
-3. Images must be of the same file type (i.e. .png)
+2. Images must be of the same size (e.g. 1280 X 720p)
+3. Images must be of the same file type (e.g. .png)
 
 > Q: What do you mean by exact equality?
 
@@ -504,7 +504,7 @@ Just to note, all tests have been done using OSX and have not be tested on any o
 - [x] Speed Improvements
 - [x] Create environment and base directory to store images
 - [x] Update Tests
-- [ ] Add Contributing.md
+- [x] Add Contributing.md
 - [ ] Add Notes
 - [ ] Add code comments
 - [ ] Reformat to fit snake_case style
