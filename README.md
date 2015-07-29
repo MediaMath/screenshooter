@@ -239,11 +239,6 @@ Contents:
 getChange(color = (0, 150, 255), highlightDiff = True, originalLoc = None, modifiedLoc = None)
 ```
 Args:
-- color: determines the color of the highlighted portions of the change image
-  - Default: RGB(0, 150, 255)
-- highlightDiff: boolean that determines whether or not to apply a highlight to the change image
-  - Default: True
-  - **Note** if false the change image will show the change in more vibrant colors while the rest of the image is opaque
 - originalLoc: the location of the original image
   - Default: None
   - **Note** if `equals` has been called before this method then it will default to the original location provided there
@@ -251,25 +246,18 @@ Args:
   - Default: None
   - **Note** if `equals` has been called before this method then it will default to the modified location provided there
 
-This method will only display the diff of the image that changed from the original thus it is crucial to make sure the original and modified images are exactly that or the correct result won't be returned and at best inverted.
+Config Args:
+  - color: determines the color of the highlighted portions of the change image
+    - Default: RGB(0, 150, 255)
+    - **Note**: if color is set to None the image will not contain highlighted portions, instead the diff will be brighter than the rest of the image
 
-If default parameters are fine but locations need to be adjusted implement the following call:
-```python
-original = {'View': someView, 'Date': someDate, 'Function': someFunction}
-modified = {'View': someOtherView, 'Date': someOtherDate, 'Function': someOtherFunction}
-getChange(originalLoc = original, modifiedLoc = modified)
-```
+This method will only display the diff of the image that changed from the original thus it is crucial to make sure the original and modified images are exactly that or the correct result won't be returned and at best inverted.
 
 ####Diff
 ```python
 getDiff(color = (0, 150, 255), highlightDiff = True, originalLoc = None, modifiedLoc = None)
 ```
 Args:
-- color: determines the color of the highlighted portions of the change image
-  - Default: RGB(0, 150, 255)
-- highlightDiff: boolean that determines whether or not to apply a highlight to the diff image
-  - Default: True
-  - **Note** if false the diff image will show the diff in more vibrant colors while the rest of the image is opaque
 - originalLoc: the location of the original image
   - Default: None
     - **Note** if `equals` has been called before this method then it will default to the original location provided there
@@ -277,14 +265,10 @@ Args:
   - Default: None
     - **Note** if `equals` has been called before this method then it will default to the modified location provided there
 
-If the default parameters for color are fine but the last images used by the equals function are not, implement the following call:
-
-```python
-original = {'View': someView, 'Date': someDate, 'Function': someFunction}
-modified = {'View': someOtherView, 'Date': someOtherDate, 'Function': someOtherFunction}
-getDiff(originalLoc = original, modifiedLoc = modified)
-```
-The only thing that must be different between the two values is function, otherwise it's the same image.
+Config Args:
+- color: determines the color of the highlighted portions of the change image
+  - Default: RGB(0, 150, 255)
+  - **Note**: if color is set to None the image will not contain highlighted portions, instead the diff will be brighter than the rest of the image
 
 **NOTE:** If the locations are not given as parameters and equals has not been called or images have not been assigned to the class an UnboundLocalError will be raised, this needs to be handled.
 
@@ -303,7 +287,10 @@ There are two methods to locate images:
   - All api calls are made before locating the image
   - Checks to see if image exists in dictionary
 
+This is can be done using any service, by default it's the one chosen in the config file.
+
 Requires: location of temp image to diff against
+
 Returns: location to where the stored image is located in the multi-dimensional dictionary
 
 ###Capsule
@@ -533,12 +520,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [ ] Add Notes
 - [ ] Add code comments
 - [ ] Reformat to fit snake_case style
-- [ ] Update Readme
+- [x] Update Readme
 
 ####Things that should be added to Readme
 - [x] Add Changelog
 - [x] Update how retrieval of images works
-- [ ] Add config args to applicable functions
+- [x] Add config args to applicable functions
 
 ####For Next Version
 
