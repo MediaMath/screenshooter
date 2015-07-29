@@ -497,6 +497,31 @@ Just to note, all tests have been done using OSX and have not be tested on any o
 
 ##History
 
+###Change Log
+
+This project adheres to [Semantic Versioning](http://semver.org/).
+
+####0.2.0 - unreleased
+#####Added
+- `collectImg` method to each service in the `saves` module in order to collect only a single image when needed
+- `subtractPixels` method in `Differ` in order to subtract individual pixels; used by `getChange` method
+
+
+#####Changed
+- `collectImages` method in `fsService` now only grabs images from the `"environment/base"` directory specified in the config file
+- `save` method in both services of the `save` module now saves to two locations: the first being the standard archive location in the environment directory (`"environment/view/date/function"`), the second being the base directory if specified to do so by the config file (`"environment/base/view/function"`)
+- `equals` method in `Differ` now stores the difference between images to a class level scope
+- `storeScreenshot` method in `Differ` will now archive images if they carry the same date; giving the old image an archived timestamp on it's location
+- `locateImgForDiff` method in `Differ` now queries the `saves` module for the location of the image
+- `sanitizeForDiff` method in `Differ` now returns a single value; the difference between the two images it retrieves or the value already stored
+- `getDiff` method in `Differ` now does direct pixel access on the image for a ~5X boost in speed
+- `getChange` method in `Differ` now does direct pixel access as well as combining highlighting into the subtraction of the original image for a ~4.6X boost in speed
+- `run` method in `Differ` now defaults to what is specified in the config file for evaluating the diff and change image
+
+#####Removed
+- `getDiff` method in `Differ` has had 2 parameters removed `color` and `highlightDiff`; the `color` parameter has been moved to the config file and will only operate on defaulting to that, the `highlightDiff` parameter was too obscure and instead no color given results in not wanting a highlight as opposed to the extra boolean variable that specifies it
+- `getChange` method in `Differ` has had the same 2 parameters removed as `getDiff` for the same reason
+
 ###TO-DO
 - [ ] Add in missing info (Installation, setup.py url, etc.) once open source is greenlighted
 - [x] Allow modifications of Differ via config instead of parameters
@@ -511,8 +536,9 @@ Just to note, all tests have been done using OSX and have not be tested on any o
 - [ ] Update Readme
 
 ####Things that should be added to Readme
-- [ ] Add Changelog
+- [x] Add Changelog
 - [x] Update how retrieval of images works
+- [ ] Add config args to applicable functions
 
 ####For Next Version
 
