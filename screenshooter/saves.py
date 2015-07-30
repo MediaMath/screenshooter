@@ -116,13 +116,8 @@ class s3Service():
         return {'count': len(parsedString), 'array': parsedString}
 
     def concatInBackslash(self, *args):
-        val = ""
-        for arg in args:
-            if "." not in arg:
-                val += arg + "/"
-            else:
-                val += arg
-        return val
+        val = "/"
+        return val.join(args)
 
     def collectImages(self, imgs = None):
         dictPics = imgs or dict()
@@ -154,7 +149,7 @@ class s3Service():
         session = self.boto.session.Session(aws_access_key_id = config.accessKey, aws_secret_access_key = config.secretKey)
         s3 = session.client('s3')
 
-        loc = "{}/{}/{}/{}".format(config.envDir, config.baseDir, tmpView, tmpFunction)
+        loc = self.concatInBackslash(config.envDir, config.baseDir, tmpView, tmpFunction)
         try:
             data = s3.get_object(Bucket = config.bucket, Key = loc)
         except ClientError:

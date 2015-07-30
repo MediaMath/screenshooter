@@ -105,21 +105,6 @@ class Differ:
 
     #pass in the location of the modified img, returns location of original image
     def locateImgForDiff(self, loc, serviceName = config.service):
-        #find the oldest date stored and check if it has function, if so return location
-        # today = datetime.datetime.now().date().isoformat()
-        # try:
-        #     for dateDir in sorted(self.imgs[loc['View']], reverse = True):
-        #         if dateDir == today:
-        #             continue
-        #         loc['Date'] = dateDir
-        #         imgReference = self.getImg(loc)
-        #         if imgReference is not None:
-        #             return {'View': loc['View'], 'Date': dateDir, 'Function': loc['Function']}
-        #         else:
-        #             continue
-        # except KeyError:
-        #     pass
-        # return None
         if serviceName.upper() == "S3":
             imgReference = screenshooter.saves.s3Service.collectImg(self.imgs, loc)
         elif serviceName.upper() == "FILESYSTEM":
@@ -138,7 +123,7 @@ class Differ:
             return None
 
     def sanitizeForDiff(self, originalLoc, modifiedLoc):
-        if (originalLoc is None and modifiedLoc is None) and (self.originalImg is None or self.modifiedImg is None):
+        if (originalLoc is None and modifiedLoc is None) and (self.originalImg is None or self.modifiedImg is None) and self.diff is None:
             raise UnboundLocalError("The stored images are null and the parameters" +
                                     " do not provide locations to open them")
         if originalLoc is not None and modifiedLoc is not None:
@@ -151,8 +136,10 @@ class Differ:
                 return self.diff
             except (IOError, KeyError, TypeError):
                 return None
-        else:
+        elif self.diff is not None:
             return self.diff
+        else:
+            return None
 
     # If originalLoc and modifiedLoc are not provided it will use the last images opened
     # using the equals method. OriginalLoc must be the original image and modifiedLoc
