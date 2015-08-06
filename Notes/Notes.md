@@ -1,5 +1,71 @@
 #Notes
+
 ##Attempted Speed Improvements
+
+###Use `Image.getpixel()`
+> This method will be used as the baseline for comparison of speed improvements.
+
+Using the `PIL` library from `Pillow` the methods `Image.getpixel()` and `Image.putpixel()` were used to highlight the diff and change images.
+
+####Diff
+The following was the idea:
+
+1. subtract the images (`Image.difference()`)
+- invert the image (`Image.invert()`)
+- loop through the pixels by (x, y) coordinates and check the pixel via `Image.getpixel()`
+- if pixel should be modified use `Image.putpixel()`
+
+```python
+diff = ImageChops.invert(diff)
+for x in range(diff.size[0]):
+	for y in range(diff.size[1]):
+		if diff.getpixel((x, y)) == (255, 255, 255, 255):
+			continue
+		diff.putpixel((x, y), (0, 150, 255))
+Image.blend(diff, img1, 0.2)
+```
+
+####Change
+The following was the idea:
+
+1. subtract the images (`Image.difference()`)
+- loop through the pixels by (x, y) coordinates and check the pixel via `Image.getpixel()`
+- if pixel should be modified use `Image.putpixel()`
+- then subtract the original image from this merged image and invert the result
+- then loop through and apply the highlight per pixel if required
+
+```python
+invertOg = ImageChops.invert(originalCopy)  # invert the original image
+mergingImg = invertOg.copy()								# copy the inverted original image
+
+
+#This nested loop will run through the inverted original image copy
+#and place on it the pixel from the diff image so long as the
+#diff image pixel is not black (black means no difference)
+for x in range(mergingImg.size[0]):
+	for y in range(mergingImg.size[1]):
+		pixel = diff.getpixel((x, y))
+		if pixel == (0, 0, 0, 0):
+			continue
+		mergingImg.putpixel((x, y), pixel)
+
+#Once all the pixels from the diff image have been applied, subtract the pixels
+#from the inverted original image with the newly merged diff inverted original image
+#then invert that result
+finalDiff = ImageChops.invert(ImageChops.difference(mergingImg, invertOg))
+
+#This nested loop will run through that final diff image and apply the highlight
+#to any color other than white (after being inverted white means no difference)
+for x in range(finalDiff.size[0]):
+	for y in range(finalDiff.size[1]):
+		if finalDiff.getpixel((x, y)) == (255, 255, 255, 255):
+			continue
+		finalDiff.putpixel((x, y), (0, 150, 255))
+
+Image.blend(finalDiff, img1, 0.2)
+```
+
+---
 
 ###Use `Image.point()`
 
