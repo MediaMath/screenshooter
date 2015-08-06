@@ -1,5 +1,9 @@
 #Notes
 
+###Table Of Contents
+- [Attempted Speed Improvements](#attempted-speed-improvements)
+- [Current Implementation](#current-implementation)
+
 ##Attempted Speed Improvements
 
 ###Use `Image.getpixel()`
@@ -81,7 +85,7 @@ Quick reference on how `Image.point` works:
 
 - if using a function (usually a lambda) it computes that value for a single band intensity value and then applies that across all bands e.g. `lambda x: x * 3` would run through each band from 0 - 255 and multiply that intensity value by 3; as far as I know you can't specify which band to apply the function to, it just applies it to all bands.
 - if using a lookup table it resets the values at that spot in the band - the lookup table is as follows `[0, 1, 2, 3, ... , 255, 0, 1, 2, ..., 255, 0, 1, 2, ..., 255]` following the specification of RGB or RGBA i.e. the first 0 - 255 is R, the second is G etc. So if the value 2 in the R band was wanted to be set to 155 the lookup table would then have to be rewritten as [0, 1, 155, 3, ..., 255, 0, 1, ..., 255, 0, 1, ..., 255].
-- The above information was obtained from use as well as (stackoverflow)[http://stackoverflow.com/questions/2181292/using-the-image-point-method-in-pil-to-manipulate-pixel-data]
+- The above information was obtained from use as well as [stackoverflow](http://stackoverflow.com/questions/2181292/using-the-image-point-method-in-pil-to-manipulate-pixel-data)
 
 The resulting code in testing came out to the following:
 ```python
