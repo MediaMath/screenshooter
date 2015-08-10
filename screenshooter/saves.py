@@ -9,6 +9,15 @@ import boto3 as boto
 
 
 def removeNew(val):
+    """
+    Removes the string 'new' from a string.
+
+    Args:
+      val: a string value containing 'new' string.
+
+    Returns:
+      The value passed in without the 'new' portion of the string.
+    """
     output = ""
     parsedVals = val.split("new")
     for parsedval in parsedVals:
@@ -17,11 +26,26 @@ def removeNew(val):
 
 
 class fsService():
+    """
+    fsService is a saving and retrieval service for the images used in screenshooter. This service
+    uses the local filesystem.
+    """
 
     def __init__(self):
         pass
 
     def collectImages(self, baseDir, imgs = None):
+        """
+        Collects all images from a directory and places them into a multi-dimensional
+        dictionary.
+
+        Args:
+          baseDir: the base directory where all the images are located.
+          imgs: the multi-dimensional dictionary to place all the images (Defaults to None)
+
+        Returns:
+          The multi-dimensional dictionary with all the images in it.
+        """
         dictPics = imgs or dict()
 
         previousPath = os.path.join(baseDir, config.envDir, config.baseDir)
@@ -45,6 +69,18 @@ class fsService():
         return dictPics
 
     def collectImg(self, imgs, tmpLoc):
+        """
+        Collects a single image from a directory path.
+
+        Args:
+          imgs: the multi-dimensional dictionary to place the image in.
+          tmpLoc: a dictionary containing the location of the temp image
+            in the multi-dimensional dictionary.
+
+        Returns:
+          A dictionary containing the location of the image that was placed
+          in the multi-dimensional dictionary.
+        """
         tmpView = tmpLoc['View']
         tmpDate = tmpLoc['Date']
         tmpFunction = tmpLoc['Function']
@@ -68,6 +104,16 @@ class fsService():
         return {'View': tmpView, 'Date': date, 'Function': tmpFunction}
 
     def save(self, imgs):
+        """
+        Saves images to the storage drive.
+
+        Args:
+          imgs: the multi-dimensional dictionary that contains the images
+            to be saved.
+
+        Returns:
+          A boolean stating whether or not it succeeded, True means success.
+        """
         if imgs is None:
             raise ("Can not save anything, the multi-dimensional dictionary is None")
         today = datetime.datetime.now().date().isoformat()
@@ -107,19 +153,52 @@ class fsService():
 
 
 class s3Service():
+    """
+    s3Service is a saving and retrieval service for the images used in screenshooter. This service
+    uses Amazon's s3.
+    """
 
     def __init__(self):
         self.boto = boto
 
     def parseOutBackslash(self, location):
+        """
+        Removes backslashes from a string
+
+        Args:
+          location: the string containing backslashes
+
+        Returns:
+          A dictionary containing the number of directories
+          in the location and an array of each directory in the
+          location string.
+        """
         parsedString = location.split('/')
         return {'count': len(parsedString), 'array': parsedString}
 
     def concatInBackslash(self, *args):
-        val = "/"
-        return val.join(args)
+        """
+        Creates a string with a backslash in between each string argument.
+
+        Args:
+          args: an indescriminate number of string arguments.
+
+        Returns:
+          A string value containing each arg with a '/' inbetween them.
+        """
+        return "/".join(args)
 
     def collectImages(self, imgs = None):
+        """
+        Collects all images from an s3 bucket and places them into a multi-dimensional
+        dictionary.
+
+        Args:
+          imgs: the multi-dimensional dictionary to place all the images (Defaults to None)
+
+        Returns:
+          The multi-dimensional dictionary with all the images in it.
+        """
         dictPics = imgs or dict()
         session = self.boto.session.Session(aws_access_key_id = config.accessKey, aws_secret_access_key = config.secretKey)
         s3 = session.client('s3')
@@ -143,6 +222,18 @@ class s3Service():
         return dictPics
 
     def collectImg(self, imgs, tmpLoc):
+        """
+        Collects a single image from a s3 bucket.
+
+        Args:
+          imgs: the multi-dimensional dictionary to place the image in.
+          tmpLoc: a dictionary containing the location of the temp image
+            in the multi-dimensional dictionary.
+
+        Returns:
+          A dictionary containing the location of the image that was placed
+          in the multi-dimensional dictionary.
+        """
         tmpView = tmpLoc['View']
         tmpFunction = tmpLoc['Function']
 
@@ -164,6 +255,17 @@ class s3Service():
         return {'View': tmpView, 'Date': date, 'Function': tmpFunction}
 
     def save(self, imgs):
+        """
+        Saves images to s3 based on their location in the multi-dimensional
+        dictionary.
+
+        Args:
+          imgs: the multi-dimensional dictionary that contains the images
+            to be saved.
+
+        Returns:
+          A boolean stating whether or not it succeeded, True means success.
+        """
         environmentDir = config.envDir
         baseDir = config.baseDir
         bucket = config.bucket

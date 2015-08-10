@@ -6,6 +6,10 @@ import screenshooter.saves
 
 
 class Differ:
+    """
+    Differ is a service that allows the diffing of images.
+    """
+
     def __init__(self):
         self.imgs = dict()
         self.diff = None
