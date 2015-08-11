@@ -170,8 +170,7 @@ class s3_service():
           in the location and an array of each directory in the
           location string.
         """
-        parsed_string = location.split('/')
-        return {'count': len(parsed_string), 'array': parsed_string}
+        return location.split('/')
 
     def concat_in_backslash(self, *args):
         """
@@ -203,12 +202,17 @@ class s3_service():
         for content in contents['Contents']:
             if content['Size'] == 0:
                 continue
-            parsed_key = self.parse_out_backslash(content['Key'])['array']
-            if len(parsed_key) != 3:
+            parsed_key = self.parse_out_backslash(content['Key'])
+            if len(parsed_key) != 4:
                 continue
-            view = parsed_key[0]
-            date = parsed_key[1]
-            function = parsed_key[2]
+            environment = parsed_key[0]
+            if environment != config.env_dir:
+                continue
+            base_dir = parsed_key[1]
+            if base_dir != config.base_dir:
+                continue
+            view = parsed_key[2]
+            function = parsed_key[3]
             data = s3.get_object(Bucket = config.bucket, Key = content['Key'])
             data_bytes_io = io.BytesIO(data['Body'].read())
             if view not in dict_pics:
