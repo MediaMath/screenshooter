@@ -6,9 +6,10 @@ from PIL import Image
 import datetime
 import shutil
 import boto3 as boto
+import re
 
 
-def removeNew(val):
+def remove_new(val):
     """
     Removes the string 'new' from a string.
 
@@ -18,90 +19,86 @@ def removeNew(val):
     Returns:
       The value passed in without the 'new' portion of the string.
     """
-    output = ""
-    parsedVals = val.split("new")
-    for parsedval in parsedVals:
-        output += parsedval
-    return output
+    return "".join(filter(None, re.split('new_?', val)))
 
 
-class fsService():
+class fs_service():
     """
-    fsService is a saving and retrieval service for the images used in screenshooter. This service
+    fs_service is a saving and retrieval service for the images used in screenshooter. This service
     uses the local filesystem.
     """
 
     def __init__(self):
         pass
 
-    def collectImages(self, baseDir, imgs = None):
+    def collect_images(self, base_dir, imgs = None):
         """
         Collects all images from a directory and places them into a multi-dimensional
         dictionary.
 
         Args:
-          baseDir: the base directory where all the images are located.
+          base_dir: the base directory where all the images are located.
           imgs: the multi-dimensional dictionary to place all the images (Defaults to None)
 
         Returns:
           The multi-dimensional dictionary with all the images in it.
         """
-        dictPics = imgs or dict()
+        dict_pics = imgs or dict()
 
-        previousPath = os.path.join(baseDir, config.envDir, config.baseDir)
-        for dirView in fnmatch.filter(os.listdir(previousPath), "*View"):
+        previous_path = os.path.join(base_dir, config.env_dir, config.base_dir)
+        for dir_view in fnmatch.filter(os.listdir(previous_path), "*View"):
 
-            previousPath = os.path.join(previousPath, dirView)
-            if os.path.isdir(previousPath):
-                if dirView not in dictPics:
-                    dictPics[dirView] = dict()
+            previous_path = os.path.join(previous_path, dir_view)
+            if os.path.isdir(previous_path):
+                if dir_view not in dict_pics:
+                    dict_pics[dir_view] = dict()
 
-                for filename in fnmatch.filter(os.listdir(previousPath), "*" + config.pictureType):
-                    path = os.path.join(previousPath, filename)
-                    modTime = os.stat(path).st_mtime
-                    date = datetime.datetime.fromtimestamp(modTime).date().isoformat()
+                for filename in fnmatch.filter(os.listdir(previous_path), "*" + config.picture_type):
+                    path = os.path.join(previous_path, filename)
+                    mod_time = os.stat(path).st_mtime
+                    date = datetime.datetime.fromtimestamp(mod_time).date().isoformat()
 
-                    if date not in dictPics[dirView]:
-                        dictPics[dirView][date] = dict()
+                    if date not in dict_pics[dir_view]:
+                        dict_pics[dir_view][date] = dict()
 
-                    dictPics[dirView][date][filename] = Image.open(os.path.join(path))
+                    dict_pics[dir_view][date][filename] = Image.open(os.path.join(path))
 
-        return dictPics
+        return dict_pics
 
-    def collectImg(self, imgs, tmpLoc):
+    def collect_img(self, imgs, tmp_loc):
         """
         Collects a single image from a directory path.
 
         Args:
           imgs: the multi-dimensional dictionary to place the image in.
-          tmpLoc: a dictionary containing the location of the temp image
+          tmp_loc: a dictionary containing the location of the temp image
             in the multi-dimensional dictionary.
 
         Returns:
           A dictionary containing the location of the image that was placed
           in the multi-dimensional dictionary.
         """
-        tmpView = tmpLoc['View']
-        tmpDate = tmpLoc['Date']
-        tmpFunction = tmpLoc['Function']
+        tmp_view = tmp_loc['View']
+        tmp_date = tmp_loc['Date']
+        tmp_function = tmp_loc['Function']
 
-        if tmpView in imgs:
-            if tmpDate in imgs[tmpView]:
-                if tmpFunction in imgs[tmpView][tmpDate]:
-                    tmp = imgs[tmpView][tmpDate][tmpFunction]
+        if tmp_view in imgs:
+            if tmp_date in imgs[tmp_view]:
+                if tmp_function in imgs[tmp_view][tmp_date]:
+                    tmp = imgs[tmp_view][tmp_date][tmp_function]
                     if tmp:
-                        return tmpLoc
+                        return tmp_loc
                     return None
 
-        path = os.path.join(config.imagePath, config.envDir, config.baseDir, tmpView, tmpFunction)
-        modTime = os.stat(path).st_mtime
-        date = datetime.datetime.fromtimestamp(modTime).date().isoformat()
-        if tmpView not in imgs:
-            imgs[tmpView] = dict()
-        if date not in imgs[tmpView]:
-            imgs[tmpView][date] = dict()
-        imgs[tmpView][date][tmpFunction] = Image.open(path)
-        return {'View': tmpView, 'Date': date, 'Function': tmpFunction}
+        path = os.path.join(config.image_path, config.env_dir, config.base_dir, tmp_view, tmp_function)
+        mod_time = os.stat(path).st_mtime
+        date = datetime.datetime.fromtimestamp(mod_time).date().isoformat()
+        if tmp_view not in imgs:
+            imgs[tmp_view] = dict()
+        if date not in imgs[tmp_view]:
+            imgs[tmp_view][date] = dict()
+        imgs[tmp_view][date][tmp_function] = Image.open(path)
+        return {'View': tmp_view, 'Date': date, 'Function': tmp_function}
 
     def save(self, imgs):
         """
@@ -117,51 +114,51 @@ class fsService():
         if imgs is None:
             raise ("Can not save anything, the multi-dimensional dictionary is None")
         today = datetime.datetime.now().date().isoformat()
-        saveToBase = config.baseStore
-        basePath = os.path.join(config.imagePath, config.envDir)
-        baseDir = config.baseDir
+        save_to_base = config.base_store
+        base_path = os.path.join(config.image_path, config.env_dir)
+        base_dir = config.base_dir
         try:
-            if not os.path.exists(basePath):
-                os.mkdir(basePath)
-            if not os.path.exists(os.path.join(basePath, baseDir)):
-                os.mkdir(os.path.join(basePath, baseDir))
+            if not os.path.exists(base_path):
+                os.mkdir(base_path)
+            if not os.path.exists(os.path.join(base_path, base_dir)):
+                os.mkdir(os.path.join(base_path, base_dir))
             for view in fnmatch.filter(imgs, "*View"):
-                if not os.path.exists(os.path.join(basePath, view)):
-                    os.mkdir(os.path.join(basePath, view))
-                if not os.path.exists(os.path.join(basePath, baseDir, view)):
-                    os.mkdir(os.path.join(basePath, baseDir, view))
+                if not os.path.exists(os.path.join(base_path, view)):
+                    os.mkdir(os.path.join(base_path, view))
+                if not os.path.exists(os.path.join(base_path, base_dir, view)):
+                    os.mkdir(os.path.join(base_path, base_dir, view))
                 for day in fnmatch.filter(imgs[view], today + "*"):
-                    if not os.path.exists(os.path.join(basePath, view, day)):
-                        os.mkdir(os.path.join(basePath, view, day))
+                    if not os.path.exists(os.path.join(base_path, view, day)):
+                        os.mkdir(os.path.join(base_path, view, day))
                     for function in fnmatch.filter(imgs[view][day], "new*"):
-                        imgs[view][day][function].save(os.path.join(basePath, view,
-                                                                    day, removeNew(function)))
-                        if ("Diff" not in function or "Change" not in function) and saveToBase:
-                            imgs[view][day][function].save(os.path.join(basePath, baseDir, view, removeNew(function)))
+                        imgs[view][day][function].save(os.path.join(base_path, view,
+                                                                    day, remove_new(function)))
+                        if ("Diff" not in function or "Change" not in function) and save_to_base:
+                            imgs[view][day][function].save(os.path.join(base_path, base_dir, view, remove_new(function)))
             return True
         except (KeyError, IOError):
             return False
 
     #This is no longer useful, could refactor to eliminate files past a default archive date
-    def cleanupFS(self):
+    def cleanupfs(self):
         try:
-            path = config.imagePath + "tmp"
+            path = config.image_path + "tmp"
             shutil.rmtree(path)
         except IOError:
             return False
         return True
 
 
-class s3Service():
+class s3_service():
     """
-    s3Service is a saving and retrieval service for the images used in screenshooter. This service
+    s3_service is a saving and retrieval service for the images used in screenshooter. This service
     uses Amazon's s3.
     """
 
     def __init__(self):
         self.boto = boto
 
-    def parseOutBackslash(self, location):
+    def parse_out_backslash(self, location):
         """
         Removes backslashes from a string
 
@@ -173,10 +170,10 @@ class s3Service():
           in the location and an array of each directory in the
           location string.
         """
-        parsedString = location.split('/')
-        return {'count': len(parsedString), 'array': parsedString}
+        parsed_string = location.split('/')
+        return {'count': len(parsed_string), 'array': parsed_string}
 
-    def concatInBackslash(self, *args):
+    def concat_in_backslash(self, *args):
         """
         Creates a string with a backslash in between each string argument.
 
@@ -188,7 +185,7 @@ class s3Service():
         """
         return "/".join(args)
 
-    def collectImages(self, imgs = None):
+    def collect_images(self, imgs = None):
         """
         Collects all images from an s3 bucket and places them into a multi-dimensional
         dictionary.
@@ -199,60 +196,60 @@ class s3Service():
         Returns:
           The multi-dimensional dictionary with all the images in it.
         """
-        dictPics = imgs or dict()
-        session = self.boto.session.Session(aws_access_key_id = config.accessKey, aws_secret_access_key = config.secretKey)
+        dict_pics = imgs or dict()
+        session = self.boto.session.Session(aws_access_key_id = config.access_key, aws_secret_access_key = config.secret_key)
         s3 = session.client('s3')
         contents = s3.list_objects(Bucket = config.bucket)
         for content in contents['Contents']:
             if content['Size'] == 0:
                 continue
-            parsedKey = self.parseOutBackslash(content['Key'])['array']
-            if len(parsedKey) != 3:
+            parsed_key = self.parse_out_backslash(content['Key'])['array']
+            if len(parsed_key) != 3:
                 continue
-            view = parsedKey[0]
-            date = parsedKey[1]
-            function = parsedKey[2]
+            view = parsed_key[0]
+            date = parsed_key[1]
+            function = parsed_key[2]
             data = s3.get_object(Bucket = config.bucket, Key = content['Key'])
-            dataBytesIO = io.BytesIO(data['Body'].read())
-            if view not in dictPics:
-                dictPics[view] = dict()
-            if date not in dictPics[view]:
-                dictPics[view][date] = dict()
-            dictPics[view][date][function] = Image.open(dataBytesIO)
-        return dictPics
+            data_bytes_io = io.BytesIO(data['Body'].read())
+            if view not in dict_pics:
+                dict_pics[view] = dict()
+            if date not in dict_pics[view]:
+                dict_pics[view][date] = dict()
+            dict_pics[view][date][function] = Image.open(data_bytes_io)
+        return dict_pics
 
-    def collectImg(self, imgs, tmpLoc):
+    def collect_img(self, imgs, tmp_loc):
         """
         Collects a single image from a s3 bucket.
 
         Args:
           imgs: the multi-dimensional dictionary to place the image in.
-          tmpLoc: a dictionary containing the location of the temp image
+          tmp_loc: a dictionary containing the location of the temp image
             in the multi-dimensional dictionary.
 
         Returns:
           A dictionary containing the location of the image that was placed
           in the multi-dimensional dictionary.
         """
-        tmpView = tmpLoc['View']
-        tmpFunction = tmpLoc['Function']
+        tmp_view = tmp_loc['View']
+        tmp_function = tmp_loc['Function']
 
-        session = self.boto.session.Session(aws_access_key_id = config.accessKey, aws_secret_access_key = config.secretKey)
+        session = self.boto.session.Session(aws_access_key_id = config.access_key, aws_secret_access_key = config.secret_key)
         s3 = session.client('s3')
 
-        loc = self.concatInBackslash(config.envDir, config.baseDir, tmpView, tmpFunction)
+        loc = self.concat_in_backslash(config.env_dir, config.base_dir, tmp_view, tmp_function)
         try:
             data = s3.get_object(Bucket = config.bucket, Key = loc)
         except ClientError:
             return None
-        dataBytesIO = io.BytesIO(data['Body'].read())
+        data_bytes_io = io.BytesIO(data['Body'].read())
         date = data['LastModified'].date().isoformat()
-        if tmpView not in imgs:
-            imgs[tmpView] = dict()
-        if date not in imgs[tmpView]:
-            imgs[tmpView][date] = dict()
-        imgs[tmpView][date][tmpFunction] = Image.open(dataBytesIO)
-        return {'View': tmpView, 'Date': date, 'Function': tmpFunction}
+        if tmp_view not in imgs:
+            imgs[tmp_view] = dict()
+        if date not in imgs[tmp_view]:
+            imgs[tmp_view][date] = dict()
+        imgs[tmp_view][date][tmp_function] = Image.open(data_bytes_io)
+        return {'View': tmp_view, 'Date': date, 'Function': tmp_function}
 
     def save(self, imgs):
         """
@@ -266,15 +263,15 @@ class s3Service():
         Returns:
           A boolean stating whether or not it succeeded, True means success.
         """
-        environmentDir = config.envDir
-        baseDir = config.baseDir
+        environment_dir = config.env_dir
+        base_dir = config.base_dir
         bucket = config.bucket
-        saveToBase = config.baseStore
+        save_to_base = config.base_store
         if imgs is None:
             raise ("Can not save anything, the multi-dimensional dictionary is None")
         responses = list()
         count = 0
-        session = self.boto.session.Session(aws_access_key_id = config.accessKey, aws_secret_access_key = config.secretKey)
+        session = self.boto.session.Session(aws_access_key_id = config.access_key, aws_secret_access_key = config.secret_key)
         s3 = session.client('s3')
         today = datetime.datetime.now().date().isoformat()
         for view in imgs:
@@ -282,16 +279,16 @@ class s3Service():
                 continue
             for day in fnmatch.filter(imgs[view], today + "*"):
                 for function in fnmatch.filter(imgs[view][day], "new*"):
-                    bytesImgIO = io.BytesIO()
-                    imgs[view][day][function].save(bytesImgIO, "PNG")
-                    bytesImgIO.seek(0)
-                    bytesToSave = bytesImgIO.read()
-                    responses.append(s3.put_object(Body = bytesToSave, Bucket = bucket,
-                                                   Key = self.concatInBackslash(environmentDir, view, day, removeNew(function)), ContentType = "image/png"))
+                    bytes_img_io = io.BytesIO()
+                    imgs[view][day][function].save(bytes_img_io, "PNG")
+                    bytes_img_io.seek(0)
+                    bytes_to_save = bytes_img_io.read()
+                    responses.append(s3.put_object(Body = bytes_to_save, Bucket = bucket,
+                                                   Key = self.concat_in_backslash(environment_dir, view, day, remove_new(function)), ContentType = "image/png"))
                     #check to make sure not diff or change
-                    if ("Diff" not in function and "Change" not in function) and saveToBase:
-                        responses.append(s3.put_object(Body = bytesToSave, Bucket = config.bucket,
-                                                       Key = self.concatInBackslash(environmentDir, baseDir, view, removeNew(function)),
+                    if ("Diff" not in function and "Change" not in function) and save_to_base:
+                        responses.append(s3.put_object(Body = bytes_to_save, Bucket = config.bucket,
+                                                       Key = self.concat_in_backslash(environment_dir, base_dir, view, remove_new(function)),
                                                        ContentType = "image/png"))
                         count += 1
                     count += 1

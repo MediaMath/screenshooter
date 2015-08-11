@@ -517,9 +517,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [x] Create environment and base directory to store images
 - [x] Update Tests
 - [x] Add Contributing.md
-- [ ] Add Notes
-- [ ] Add code comments
-- [ ] Reformat to fit snake_case style
+- [x] Add Notes
+- [x] Add code comments
+- [x] Reformat to fit snake_case style
 - [x] Update Readme
 
 ####Things that should be added to Readme

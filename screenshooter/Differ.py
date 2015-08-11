@@ -13,75 +13,75 @@ class Differ:
     def __init__(self):
         self.imgs = dict()
         self.diff = None
-        self.originalImg = None
-        self.modifiedImg = None
-        self.archiveTime = None
-        self.imgType = config.pictureType
+        self.original_img = None
+        self.modified_img = None
+        self.archive_time = None
+        self.img_type = config.picture_type
 
-    def equals(self, firstImg, secondImg):
+    def equals(self, first_img, second_img):
         """
-        Identifies if firstImg and secondImg are identical to each other.
+        Identifies if first_img and second_img are identical to each other.
 
         Args:
-          firstImg: a PIL image object of the original image
-          secondImg: a PIL image object of the modified image
+          first_img: a PIL image object of the original image
+          second_img: a PIL image object of the modified image
 
         Returns:
           A boolean stating whether or not the two images are identical, True means they are
           identical.
         """
-        if firstImg is None or secondImg is None:
+        if first_img is None or second_img is None:
             return False
-        self.originalImg = firstImg
-        self.modifiedImg = secondImg
-        self.diff = ImageChops.difference(firstImg, secondImg)
+        self.original_img = first_img
+        self.modified_img = second_img
+        self.diff = ImageChops.difference(first_img, second_img)
         if self.diff.getbbox() != None:
             return False
         else:
             self.diff = None
             return True
 
-    def archiveImgs(self, imgLoc):
+    def archive_imgs(self, img_loc):
         """
-        Archive the image given by imgLoc and it's corresponding diff and change images.
+        Archive the image given by img_loc and it's corresponding diff and change images.
 
         Args:
-          imgLoc: a dictionary representing the location of the image within the multi-dimensional
+          img_loc: a dictionary representing the location of the image within the multi-dimensional
             dictionary i.e. {'View': 'SomeView', 'Date': 'SomeDate', 'Function': 'SomeFunction'}
         """
-        view = imgLoc['View']
-        date = imgLoc['Date']
-        function = imgLoc['Function']
+        view = img_loc['View']
+        date = img_loc['Date']
+        function = img_loc['Function']
 
-        if self.archiveTime is None:
-            self.archiveTime = datetime.datetime.now().isoformat()
-        if self.archiveTime not in self.imgs[view]:
-            self.imgs[view][self.archiveTime] = dict()
-        self.imgs[view][self.archiveTime]["new" + function] = self.imgs[view][date][function]
-        imgName = function.partition('.')
-        if imgName[0] + "Diff" + self.imgType in self.imgs[view][date]:
-            self.imgs[view][self.archiveTime]["new" + imgName[0] + "Diff.png"] = self.imgs[view][date][imgName[0] + "Diff" + self.imgType]
-        if imgName[0] + "Change" + self.imgType in self.imgs[view][date]:
-            self.imgs[view][self.archiveTime]["new" + imgName[0] + "Change.png"] = self.imgs[view][date][imgName[0] + "Change" + self.imgType]
+        if self.archive_time is None:
+            self.archive_time = datetime.datetime.now().isoformat()
+        if self.archive_time not in self.imgs[view]:
+            self.imgs[view][self.archive_time] = dict()
+        self.imgs[view][self.archive_time]["new" + function] = self.imgs[view][date][function]
+        img_name = function.partition('.')
+        if img_name[0] + "Diff" + self.img_type in self.imgs[view][date]:
+            self.imgs[view][self.archive_time]["new" + img_name[0] + "Diff.png"] = self.imgs[view][date][img_name[0] + "Diff" + self.img_type]
+        if img_name[0] + "Change" + self.img_type in self.imgs[view][date]:
+            self.imgs[view][self.archive_time]["new" + img_name[0] + "Change.png"] = self.imgs[view][date][img_name[0] + "Change" + self.img_type]
 
-    def storeScreenshot(self, imgLoc):
+    def store_screenshot(self, img_loc):
         """
         Moves the screenshot from it's temporary location in the multi-dimensional dictionary to a portion
         where it will actually be saved.
 
         Args:
-          imgLoc: a dictionary representing the location of the image within the multi-dimensional
+          img_loc: a dictionary representing the location of the image within the multi-dimensional
             dictionary i.e. {'View': 'SomeView', 'Date': 'SomeDate', 'Function': 'SomeFunction'}
 
         Returns:
           A boolean stating whether or not it was successful, True means successful.
         """
-        if imgLoc is None:
+        if img_loc is None:
             return False
 
-        view = imgLoc['View']
-        date = imgLoc['Date']
-        function = imgLoc['Function']
+        view = img_loc['View']
+        date = img_loc['Date']
+        function = img_loc['Function']
 
         try:
             if view not in self.imgs:
@@ -89,106 +89,106 @@ class Differ:
             if date not in self.imgs[view]:
                 self.imgs[view][date] = dict()
             if function in self.imgs[view][date]:
-                self.archiveImgs(imgLoc)
+                self.archive_imgs(img_loc)
             self.imgs[view][date]["new" + function] = self.imgs['tmp'][view][date][function]
         except KeyError:
             del self.imgs[view][date]["new" + function]
             return False
         return True
 
-    def storeDiff(self, imgLoc, diffImg):
+    def store_diff(self, img_loc, diff_img):
         """
         Adds the diff image to the multi-dimensional dictionary so it can be saved.
 
         Args:
-          imgLoc: a dictionary representing the location of the image that was used to create the diff image within
+          img_loc: a dictionary representing the location of the image that was used to create the diff image within
             the multi-dimensional dictionary i.e. {'View': 'SomeView', 'Date': 'SomeDate', 'Function': 'SomeFunction'}
-          diffImg: a PIL image object of the diff image
+          diff_img: a PIL image object of the diff image
 
         Returns:
           A boolean stating whether or not it was successful, True means successful.
         """
-        if diffImg is None:
+        if diff_img is None:
             return False
 
-        view = imgLoc['View']
-        date = imgLoc['Date']
-        imgName = imgLoc['Function'].partition('.')
+        view = img_loc['View']
+        date = img_loc['Date']
+        img_name = img_loc['Function'].partition('.')
 
-        diffName = "new" + imgName[0] + "Diff" + self.imgType
-        self.imgs[view][date][diffName] = diffImg
+        diff_name = "new" + img_name[0] + "Diff" + self.img_type
+        self.imgs[view][date][diff_name] = diff_img
         return True
 
-    def storeChange(self, imgLoc, changeImg):
+    def store_change(self, img_loc, change_img):
         """
         Adds the change image to the multi-dimensional dictionary so it can be saved.
 
         Args:
-          imgLoc: a dictionary representing the location of the image that was used to create the change image within
+          img_loc: a dictionary representing the location of the image that was used to create the change image within
             the multi-dimensional dictionary i.e. {'View': 'SomeView', 'Date': 'SomeDate', 'Function': 'SomeFunction'}
-          changeImg: a PIL image object of the diff image
+          change_img: a PIL image object of the diff image
 
         Returns:
           A boolean stating whether or not it was successful, True means successful.
         """
-        if changeImg is None:
+        if change_img is None:
             return False
 
-        view = imgLoc['View']
-        date = imgLoc['Date']
-        imgName = imgLoc['Function'].partition('.')
+        view = img_loc['View']
+        date = img_loc['Date']
+        img_name = img_loc['Function'].partition('.')
 
-        changeName = "new" + imgName[0] + "Change" + self.imgType
-        self.imgs[view][date][changeName] = changeImg
+        change_name = "new" + img_name[0] + "Change" + self.img_type
+        self.imgs[view][date][change_name] = change_img
 
         return True
 
-    def store(self, imgLoc = None, diffImg = None, changeImg = None):
+    def store(self, img_loc = None, diff_img = None, change_img = None):
         """
         Adds the screenshot and it's corresponding diff and change images to the multi-dimensional dictionary
         so they can be saved.
 
         Args:
-          imgLoc: a dictionary representing the location of the screenshot within the
+          img_loc: a dictionary representing the location of the screenshot within the
             multi-dimensional dictionary i.e. {'View': 'SomeView', 'Date': 'SomeDate', 'Function': 'SomeFunction'}
-          diffImg: a PIL image object of the diff image
-          changeImg: a PIL image object of the change image
+          diff_img: a PIL image object of the diff image
+          change_img: a PIL image object of the change image
 
         Returns:
           A boolean stating whether or not it was successful, True means successful.
         """
 
-        if imgLoc is None and diffImg is None and changeImg is None:
+        if img_loc is None and diff_img is None and change_img is None:
             return False
 
-        if self.storeScreenshot(imgLoc):
-            self.storeDiff(imgLoc, diffImg)
-            self.storeChange(imgLoc, changeImg)
+        if self.store_screenshot(img_loc):
+            self.store_diff(img_loc, diff_img)
+            self.store_change(img_loc, change_img)
         else:
             return False
 
         return True
 
-    def locateImgForDiff(self, loc, serviceName = config.service):
+    def locate_img_for_diff(self, loc, service_name = config.service):
         """
         Locates the image to diff against.
 
         Args:
           loc: a dictionary representing the location of the modified image within the
             multi-dimensional dictionary i.e. {'View': 'SomeView', 'Date': 'SomeDate', 'Function': 'SomeFunction'}
-          serviceName: the name of the service to grab the image from (Defaults to the service in the config file)
+          service_name: the name of the service to grab the image from (Defaults to the service in the config file)
 
         Returns:
           A dictionary representing the location of the original image to diff against in the
             multi-dimensional dictionary
         """
-        if serviceName.upper() == "S3":
-            imgReference = screenshooter.saves.s3Service.collectImg(self.imgs, loc)
-        elif serviceName.upper() == "FILESYSTEM":
-            imgReference = screenshooter.saves.fsService.collectImg(self.imgs, loc)
-        return imgReference
+        if service_name.upper() == "S3":
+            img_reference = screenshooter.saves.s3_service.collect_img(self.imgs, loc)
+        elif service_name.upper() == "FILESYSTEM":
+            img_reference = screenshooter.saves.fs_service.collect_img(self.imgs, loc)
+        return img_reference
 
-    def getImg(self, loc, tmp = False):
+    def get_img(self, loc, tmp = False):
         """
         Retrieves the PIL image object from the multi-dimensional dictionary.
 
@@ -211,14 +211,14 @@ class Differ:
         except KeyError:
             return None
 
-    def sanitizeForDiff(self, originalLoc, modifiedLoc):
+    def sanitize_for_diff(self, original_loc, modified_loc):
         """
         Checks to make sure all the information is acceptable before performing the diff.
 
         Args:
-          originalLoc: a dictionary representing the location of the original image within the
+          original_loc: a dictionary representing the location of the original image within the
             multi-dimensional dictionary i.e. {'View': 'SomeView', 'Date': 'SomeDate', 'Function': 'SomeFunction'}
-          modifiedLoc: a dictionary representing the location of the modified image within the
+          modified_loc: a dictionary representing the location of the modified image within the
             multi-dimensional dictionary i.e. {'View': 'SomeView', 'Date': 'SomeDate', 'Function': 'SomeFunction'}
 
         Returns:
@@ -227,14 +227,14 @@ class Differ:
         Raises:
           UnboundLocalError: The class level images are null and the parameters do not provide locations to open them.
         """
-        if (originalLoc is None and modifiedLoc is None) and (self.originalImg is None or self.modifiedImg is None) and self.diff is None:
+        if (original_loc is None and modified_loc is None) and (self.original_img is None or self.modified_img is None) and self.diff is None:
             raise UnboundLocalError("The class level images are null and the parameters" +
                                     " do not provide locations to open them")
-        if originalLoc is not None and modifiedLoc is not None:
+        if original_loc is not None and modified_loc is not None:
             try:
-                self.originalImg = self.getImg(originalLoc)
-                self.modifiedImg = self.getImg(modifiedLoc, True)
-                self.diff = ImageChops.difference(self.originalImg, self.modifiedImg)
+                self.original_img = self.get_img(original_loc)
+                self.modified_img = self.get_img(modified_loc, True)
+                self.diff = ImageChops.difference(self.original_img, self.modified_img)
                 if self.diff.getbbox() is None:
                     return None
                 return self.diff
@@ -245,15 +245,15 @@ class Differ:
         else:
             return None
 
-    def getDiff(self, originalLoc = None, modifiedLoc = None):
+    def get_diff(self, original_loc = None, modified_loc = None):
         """
         Gets the difference between two images and applies a highlight over them if specified.
 
         Args:
-          originalLoc: a dictionary representing the location of the original image within the
+          original_loc: a dictionary representing the location of the original image within the
             multi-dimensional dictionary i.e. {'View': 'SomeView', 'Date': 'SomeDate', 'Function': 'SomeFunction'}
             (Defaults to None)
-          modifiedLoc: a dictionary representing the location of the modified image within the
+          modified_loc: a dictionary representing the location of the modified image within the
             multi-dimensional dictionary i.e. {'View': 'SomeView', 'Date': 'SomeDate', 'Function': 'SomeFunction'}
             (Defaults to None)
 
@@ -261,17 +261,17 @@ class Differ:
           A PIL image object of the diff image.
         """
 
-        dif = self.sanitizeForDiff(originalLoc, modifiedLoc)
+        dif = self.sanitize_for_diff(original_loc, modified_loc)
 
         if dif is None:
             return None
 
-        color = config.highlightColor
+        color = config.highlight_color
 
         dif = ImageChops.invert(dif)
 
         if not color:
-            return Image.blend(dif, self.originalImg, 0.2)
+            return Image.blend(dif, self.original_img, 0.2)
 
         width = dif.size[0]
         height = dif.size[1]
@@ -282,9 +282,9 @@ class Differ:
                     continue
                 pixel[x, y] = color
 
-        return Image.blend(dif, self.originalImg, 0.2)
+        return Image.blend(dif, self.original_img, 0.2)
 
-    def subtractPixels(self, first, second):
+    def subtract_pixels(self, first, second):
         """
         Subtract two pixels.
 
@@ -297,15 +297,15 @@ class Differ:
         """
         return tuple([abs(first[0] - second[0]), abs(first[1] - second[1]), abs(first[2] - second[2]), abs(first[3] - second[3])])
 
-    def getChange(self, originalLoc = None, modifiedLoc = None):
+    def get_change(self, original_loc = None, modified_loc = None):
         """
         Gets the changed difference between two images and applies a highlight over them if specified.
 
         Args:
-          originalLoc: a dictionary representing the location of the original image within the
+          original_loc: a dictionary representing the location of the original image within the
             multi-dimensional dictionary i.e. {'View': 'SomeView', 'Date': 'SomeDate', 'Function': 'SomeFunction'}
             (Defaults to None)
-          modifiedLoc: a dictionary representing the location of the modified image within the
+          modified_loc: a dictionary representing the location of the modified image within the
             multi-dimensional dictionary i.e. {'View': 'SomeView', 'Date': 'SomeDate', 'Function': 'SomeFunction'}
             (Defaults to None)
 
@@ -313,58 +313,58 @@ class Differ:
           A PIL image object of the change image.
         """
 
-        diff = self.sanitizeForDiff(originalLoc, modifiedLoc)
+        diff = self.sanitize_for_diff(original_loc, modified_loc)
 
         if diff is None:
             return None
 
-        color = config.highlightColor
+        color = config.highlight_color
 
-        mergingImg = ImageChops.invert(self.originalImg)
+        merging_img = ImageChops.invert(self.original_img)
 
-        width = mergingImg.size[0]
-        height = mergingImg.size[1]
+        width = merging_img.size[0]
+        height = merging_img.size[1]
 
-        diffPixels = diff.load()
-        mergePixel = mergingImg.load()
+        diff_pixels = diff.load()
+        merge_pixel = merging_img.load()
 
         for x in range(width):
             for y in range(height):
-                diffPixel = diffPixels[x, y]
-                if diffPixel != (0, 0, 0, 0):
-                    if self.subtractPixels(diffPixel, mergePixel[x, y]) == (0, 0, 0, 0):
-                        mergePixel[x, y] = (255, 255, 255, 255)
+                diff_pixel = diff_pixels[x, y]
+                if diff_pixel != (0, 0, 0, 0):
+                    if self.subtract_pixels(diff_pixel, merge_pixel[x, y]) == (0, 0, 0, 0):
+                        merge_pixel[x, y] = (255, 255, 255, 255)
                     else:
                         if color is None:
                             continue
-                        mergePixel[x, y] = color
+                        merge_pixel[x, y] = color
                 else:
-                    mergePixel[x, y] = (255, 255, 255, 255)
+                    merge_pixel[x, y] = (255, 255, 255, 255)
 
-        return Image.blend(mergingImg, self.originalImg, 0.2)
+        return Image.blend(merging_img, self.original_img, 0.2)
 
     def run(self):
         """
         A singular function to run through the multi-dimensional dictionary and diff all images in the
         tmp dictionary and then store the images that result in a diff/change for saving.
         """
-        diffFlag = config.runDiff
-        changeFlag = config.runChange
+        diff_flag = config.run_diff
+        change_flag = config.run_change
         for view in self.imgs['tmp']:
             for date in self.imgs['tmp'][view]:
                 for function in self.imgs['tmp'][view][date]:
-                    modifiedLoc = {'View': view, 'Date': date, 'Function': function}
-                    originalLoc = self.locateImgForDiff(modifiedLoc)
+                    modified_loc = {'View': view, 'Date': date, 'Function': function}
+                    original_loc = self.locate_img_for_diff(modified_loc)
                     diff = None
                     change = None
-                    if originalLoc:
-                        modifiedImg = self.getImg(modifiedLoc, True)
-                        originalImg = self.getImg(originalLoc)
-                        if self.equals(originalImg, modifiedImg):
+                    if original_loc:
+                        modified_img = self.get_img(modified_loc, True)
+                        original_img = self.get_img(original_loc)
+                        if self.equals(original_img, modified_img):
                             continue
-                        if diffFlag:
-                            diff = self.getDiff()
-                        if changeFlag:
-                            change = self.getChange()
-                    self.store(modifiedLoc, diff, change)
+                        if diff_flag:
+                            diff = self.get_diff()
+                        if change_flag:
+                            change = self.get_change()
+                    self.store(modified_loc, diff, change)
         return True
