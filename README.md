@@ -1,4 +1,4 @@
-#Screenshooter - v 0.1.0
+#Screenshooter
 Documentation - Elan Moyal - MediaMath Manhattan
 
 ###Table of Contents
@@ -19,9 +19,9 @@ Documentation - Elan Moyal - MediaMath Manhattan
 
 ##Description
 
-Screenshooter allows one to obtain a difference between a current UI layout and a previous UI layout via screenshots.
+Screenshooter allows you to determine the difference between a current UI layout and a previous UI layout using screenshots.
 
-Screenshooter contains a wrapper on Selenium Webdriver that will help automate the testing of various situations while taking a screenshot of various portions of the UI. Once screenshooter has obtained all the screenshots from the tests a method may be called to compare them against previous versions of that same UI. If there is a difference the updated image is saved along with the difference / change. The previous versions are stored via some other system e.g. on the local filesystem, or something like Amazon S3.
+Screenshooter contains a wrapper on Selenium Webdriver that will help automate the testing of various situations, while taking screenshots of various portions of the UI. Once screenshooter has generated all the screenshots from the tests, a method may be called to compare them against previous versions of that same UI. If there is a difference, the updated image is saved along with the change. The previous versions are stored in some other system, e.g. on the local filesystem or something like Amazon S3.
 
 ##Setup
 
