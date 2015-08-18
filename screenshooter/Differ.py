@@ -1,7 +1,6 @@
 from PIL import Image
 from PIL import ImageChops
 import datetime
-import screenshooter.config as config
 import screenshooter.saves
 
 
@@ -10,7 +9,10 @@ class Differ:
     Differ is a service that allows the diffing of images.
     """
 
-    def __init__(self):
+    def __init__(self, user_config):
+        if user_config is None:
+            raise UnboundLocalError("A configuration file has not been referenced, please provide one.")
+        self.config = user_config
         self.imgs = dict()
         self.diff = None
         self.original_img = None

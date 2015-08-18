@@ -21,6 +21,7 @@ browser_width = 1280
 browser_height = 720
 
 #Default service to use
+#Options are (S3, FILESYSTEM)
 service = 'S3'
 
 #Saves

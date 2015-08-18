@@ -13,6 +13,7 @@ Documentation - Elan Moyal - MediaMath Manhattan
   - [General rules](#general-rules)
   - [Differ](#differ)
   - [Capsule](#capsule)
+  - [Config](#config)
 - [Limitations](#limitations)
 - [History](#history)
 - [License](#license)
@@ -132,19 +133,20 @@ pytest will pick up all the files beginning with test_ and run them.
 
 Screenshooter is made of three seperate modules: capsule, differ, and saves. Capsule is the wrapper for selenium webdriver that takes screenshots and uses them to implement differ. Differ takes the images and creates the image differences of them. Saves grabs all the existing images from some external or local source and packages them into a single multi-dimensional dictionary that can be used by Differ.
 
-All interaction with screenshooter can be done through capsule (if the defaults on differ are acceptable; future versions will allow altering of differ via the config file).
+All interaction with screenshooter can be done through capsule (if you would like to alter the defaults on differ or saves you would have to alter the [config](#config)).
 
 **Note:** All examples will be using pytest
 
 Basic Example of usage:
 ```python
 from selenium import webdriver
+import screenshooter.config as config
 from screenshooter.capsule import Capsule
 
 class SomeTestingFramework():
       @classmethod
       def setup_class(cls):
-          cls.capsule = Capsule()
+          cls.capsule = Capsule(config)
 
       def setup_method(self, method):
           self.driver = webdriver.Chrome()
@@ -458,6 +460,84 @@ Args:
 This method will scroll the length of the viewable page (what you see on your screen) and then take a screenshot, doing this repeatedly until the entire page has been scrolled. Use this in conjunction with `get_page` to route to a specific page and screenshot every part of it.
 
 ---
+
+###Config
+To alter the contents of the default config file, you would need to create your own configuration, i.e.
+```
+#my_config.py
+import screenshooter.config as config
+
+config.picture_type = ".jpg"
+```
+Then you would import this configuration file into your module, i.e.
+```
+from selenium import webdriver
+import my_config
+from screenshooter.capsule import Capsule
+
+class SomeTestingFramework():
+      @classmethod
+      def setup_class(cls):
+          cls.capsule = Capsule(my_config)
+
+```
+If no configuration file is passed into Capsule it will use the default configuration file. Any configuration file passed into Capsule will trickle down to the instantiations of differ and saves. Since differ and saves are more often used via capsule any direct access to them requires a configuration file upon instantiation.
+
+The following are the contents of the config file which would need to overwritten:
+```
+import os
+
+#Global Parameters set here
+picture_type = ".png"  # must contain period
+
+#Differ
+
+#The color that the diff image will contain / set to None for no highlight
+highlight_color = (0, 150, 255, 255)
+
+#Run get_diff method by default
+run_diff = True
+
+#Run get_change method by default
+run_change = True
+
+#Capsule
+
+#Which size to set the browser to
+browser_width = 1280
+browser_height = 720
+
+#Default service to use
+#Options are (S3, FILESYSTEM)
+service = 'S3'
+
+#Saves
+
+#Environment Directory
+env_dir = 'QA'
+
+#Base Directory to diff images against
+base_dir = 'Base'
+
+#Save the screenshots taken on next run to the base directory
+base_store = True
+
+#Amazon S3
+
+#Amazon specific parameters
+bucket = os.environ['S3_BUCKET']  # "name_of_your_bucket"
+profile = os.environ['S3_USER']  # "your_username"
+
+# Keys
+access_key = os.environ['AWS_ACCESS_KEY_ID']
+secret_key = os.environ['AWS_SECRET_ACCESS_KEY']
+
+#FILESYSTEM
+
+# alter according to where you placed the files
+project_path = os.path.expanduser("~/Documents/Projects/screenshot/")
+image_path = os.path.expanduser("~/Pictures/")
+```
 
 ##Limitations
 #####Equality

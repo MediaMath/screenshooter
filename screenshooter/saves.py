@@ -1,11 +1,9 @@
 import io
 import os
 import fnmatch
-import screenshooter.config as config
 from PIL import Image
 import datetime
 import shutil
-import boto3 as boto
 import re
 
 
@@ -28,8 +26,10 @@ class fs_service():
     uses the local filesystem.
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, user_config):
+        if user_config is None:
+            raise UnboundLocalError("A configuration file has not been referenced, please provide one.")
+        self.config = user_config
 
     def collect_images(self, base_dir, imgs = None):
         """
@@ -155,7 +155,11 @@ class s3_service():
     uses Amazon's s3.
     """
 
-    def __init__(self):
+    def __init__(self, user_config):
+        if user_config is None:
+            raise UnboundLocalError("A configuration file has not been referenced, please provide one.")
+        import boto3 as boto
+        self.config = user_config
         self.boto = boto
 
     def parse_out_backslash(self, location):

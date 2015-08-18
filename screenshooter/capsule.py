@@ -1,5 +1,4 @@
 from screenshooter.differ import Differ
-import screenshooter.config as config
 from selenium.webdriver.common.keys import Keys
 from PIL import Image
 from datetime import datetime
@@ -14,8 +13,13 @@ class Capsule():
     to create a diff image.
     """
 
-    def __init__(self):
-        self.differ = Differ()
+    def __init__(self, user_config = None):
+        if user_config is None:
+            import screenshooter.config as config
+            self.config = config
+        else:
+            self.config = user_config
+        self.differ = Differ(self.config)
         self.imgs = self.differ.imgs
 
     def get_x_path(self, **kwargs):
@@ -222,10 +226,10 @@ class Capsule():
         """
         if service_name.upper() == "S3":
             from screenshooter.saves import s3_service
-            service = s3_service()
+            service = s3_service(self.config)
         elif service_name.upper() == "FILESYSTEM":
             from screenshooter.saves import fs_service
-            service = fs_service()
+            service = fs_service(self.config)
 
         service.collect_images(self.differ.imgs)
         self.differ.run()
