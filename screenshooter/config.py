@@ -26,6 +26,9 @@ service = 'S3'
 
 #Saves
 
+#Collect all images by default
+collect_all_images = False
+
 #Environment Directory
 env_dir = 'QA'
 

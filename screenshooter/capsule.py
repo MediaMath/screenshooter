@@ -214,7 +214,7 @@ class Capsule():
         element.send_keys(Keys.ENTER)
         self.screenshot(driver, view, function)
 
-    def generate_diffs(self, service_name = config.service):
+    def generate_diffs(self, service_name = self.config.service):
         """
         Generate the diffs of the images that have been placed in the multi-dimensional dictionary.
 
@@ -231,7 +231,8 @@ class Capsule():
             from screenshooter.saves import fs_service
             service = fs_service(self.config)
 
-        service.collect_images(self.differ.imgs)
+        if self.config.collect_all_images:
+            service.collect_images(self.config.image_path, self.differ.imgs)
         self.differ.run()
         service.save(self.differ.imgs)
 

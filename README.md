@@ -198,6 +198,10 @@ Q: What is the difference between Diff and Change?
 
 A: See [example](#differ-example)
 
+Q: How do I alter the config file?
+
+A: See the [config](#config) section.
+
 ##Reference
 
 ###General Rules:
@@ -463,14 +467,14 @@ This method will scroll the length of the viewable page (what you see on your sc
 
 ###Config
 To alter the contents of the default config file, you would need to create your own configuration, i.e.
-```
+```python
 #my_config.py
 import screenshooter.config as config
 
 config.picture_type = ".jpg"
 ```
 Then you would import this configuration file into your module, i.e.
-```
+```python
 from selenium import webdriver
 import my_config
 from screenshooter.capsule import Capsule
@@ -484,7 +488,7 @@ class SomeTestingFramework():
 If no configuration file is passed into Capsule it will use the default configuration file. Any configuration file passed into Capsule will trickle down to the instantiations of differ and saves. Since differ and saves are more often used via capsule any direct access to them requires a configuration file upon instantiation.
 
 The following are the contents of the config file which would need to overwritten:
-```
+```python
 import os
 
 #Global Parameters set here
@@ -513,6 +517,9 @@ service = 'S3'
 
 #Saves
 
+#Collect all images by default
+collect_all_images = False
+
 #Environment Directory
 env_dir = 'QA'
 
@@ -534,7 +541,7 @@ secret_key = os.environ['AWS_SECRET_ACCESS_KEY']
 
 #FILESYSTEM
 
-# alter according to where you placed the files
+# alter according to where you placed the files, must end in /
 project_path = os.path.expanduser("~/Documents/Projects/screenshot/")
 image_path = os.path.expanduser("~/Pictures/")
 ```

@@ -18,7 +18,7 @@ class Differ:
         self.original_img = None
         self.modified_img = None
         self.archive_time = None
-        self.img_type = config.picture_type
+        self.img_type = self.config.picture_type
 
     def equals(self, first_img, second_img):
         """
@@ -171,7 +171,7 @@ class Differ:
 
         return True
 
-    def locate_img_for_diff(self, loc, service_name = config.service):
+    def locate_img_for_diff(self, loc, service_name = self.config.service):
         """
         Locates the image to diff against.
 
@@ -185,10 +185,10 @@ class Differ:
             multi-dimensional dictionary
         """
         if service_name.upper() == "S3":
-            img_reference = screenshooter.saves.s3_service.collect_img(self.imgs, loc)
+            service = screenshooter.saves.s3_service()
         elif service_name.upper() == "FILESYSTEM":
-            img_reference = screenshooter.saves.fs_service.collect_img(self.imgs, loc)
-        return img_reference
+            service = screenshooter.saves.fs_service()
+        return service.collect_img(self.imgs, loc)
 
     def get_img(self, loc, tmp = False):
         """
@@ -268,7 +268,7 @@ class Differ:
         if dif is None:
             return None
 
-        color = config.highlight_color
+        color = self.config.highlight_color
 
         dif = ImageChops.invert(dif)
 
@@ -320,7 +320,7 @@ class Differ:
         if diff is None:
             return None
 
-        color = config.highlight_color
+        color = self.config.highlight_color
 
         merging_img = ImageChops.invert(self.original_img)
 
@@ -350,8 +350,10 @@ class Differ:
         A singular function to run through the multi-dimensional dictionary and diff all images in the
         tmp dictionary and then store the images that result in a diff/change for saving.
         """
-        diff_flag = config.run_diff
-        change_flag = config.run_change
+        diff_flag = self.config.run_diff
+        change_flag = self.config.run_change
+        if self.imgs['tmp'] is None:
+            return False
         for view in self.imgs['tmp']:
             for date in self.imgs['tmp'][view]:
                 for function in self.imgs['tmp'][view][date]:
