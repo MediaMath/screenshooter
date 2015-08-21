@@ -469,8 +469,9 @@ This method will scroll the length of the viewable page (what you see on your sc
 To alter the contents of the default config file, you would need to create your own configuration, i.e.
 ```python
 #my_config.py
-import screenshooter.config as config
+from screenshooter.config import *
 
+#replaces screenshooter.config.picture_type
 config.picture_type = ".jpg"
 ```
 Then you would import this configuration file into your module, i.e.
