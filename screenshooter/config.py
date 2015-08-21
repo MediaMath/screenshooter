@@ -41,12 +41,12 @@ base_store = True
 #Amazon S3
 
 #Amazon specific parameters
-bucket = os.environ['S3_BUCKET']  # "name_of_your_bucket"
-profile = os.environ['S3_USER']  # "your_username"
+bucket = os.getenv('S3_BUCKET')  # "name_of_your_bucket"
+profile = os.getenv('S3_USER')  # "your_username"
 
 # Keys
-access_key = os.environ['AWS_ACCESS_KEY_ID']
-secret_key = os.environ['AWS_SECRET_ACCESS_KEY']
+access_key = os.getenv('AWS_ACCESS_KEY_ID')
+secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 
 #FILESYSTEM
 
